@@ -1,4 +1,3 @@
-import path from "path";
 import { VideoFile } from "@core/domain/entities/video-file";
 
 export class VideoPresenter {
@@ -17,7 +16,7 @@ export class VideoPresenter {
     static fromDomain(videoFile: VideoFile): VideoPresenter {
         return new VideoPresenter(
             videoFile.originalName,
-            path.basename(videoFile.filePath),
+            videoFile.savedName,
             videoFile.size,
             videoFile.type
         );

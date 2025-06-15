@@ -11,3 +11,10 @@ export class FileSizeExceededException extends Error {
     this.name = 'FileSizeExceededException';
   }
 }
+
+export class InvalidFileException extends Error {
+  constructor(message = 'Invalid video file') {
+    super(message);
+    this.name = 'InvalidFileException';
+  }
+}

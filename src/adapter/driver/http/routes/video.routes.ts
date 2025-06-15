@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response, Router } from "express";
 import upload from '../config/multer-config';
 import { UploadVideoUseCase } from "@core/application/useCases/upload-video-use-case";
+import S3VideoRepository from "@adapter/driven/aws/s3-video-repository";
 
 const videoRouter = Router()
 
@@ -16,8 +17,8 @@ videoRouter.post(
         return;
       }
       
-      const uploadVideoUseCase = new UploadVideoUseCase();
-      let response = uploadVideoUseCase.execute({
+      const uploadVideoUseCase = new UploadVideoUseCase(new S3VideoRepository());
+      let response = await uploadVideoUseCase.execute({
         filePath: videoFile.path,
         originalName: videoFile.originalname
       });

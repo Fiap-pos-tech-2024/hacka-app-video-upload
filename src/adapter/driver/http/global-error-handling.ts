@@ -21,6 +21,7 @@ const globalErrorHandler = (
       }
       break
     case 'InvalidFileTypeException':
+    case 'InvalidFileException':
       res.status(400).json({ statusCode: 400, message: err.message })
       break
     case 'FileSizeExceededException':

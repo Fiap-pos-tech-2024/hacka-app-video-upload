@@ -1,7 +1,8 @@
+import path from 'path';
 import { FileSizeExceededException, InvalidFileTypeException } from "../exceptions/file-exceptions";
-
 export class VideoFile {
   readonly originalName: string;
+  readonly savedName: string;
   readonly filePath: string;
   readonly size: number;
   readonly type: string;
@@ -14,8 +15,9 @@ export class VideoFile {
     filePath, 
     size, 
     type 
-  }: { filePath: string; size: number; type: string; originalName: string }) {
+  }: { filePath: string; size: number; type: string; originalName: string; }) {
     this.originalName = originalName;
+    this.savedName =  path.basename(filePath);
     this.filePath = filePath;
     this.size = size;
     this.type = type;
