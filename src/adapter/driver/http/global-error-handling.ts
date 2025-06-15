@@ -9,7 +9,6 @@ const globalErrorHandler = (
   _next: NextFunction,
 ) => {
   if (err instanceof SQSServiceException) {
-    console.error('SQS Service Error:', err);
     res.status(500).json({ statusCode: 500, message: 'Erro seguir para etapa de processamento do video' });
     return;
   }

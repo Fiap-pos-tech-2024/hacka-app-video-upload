@@ -4,6 +4,7 @@ import { getFileSize, getFileType, removeFile } from "@core/application/utils/fi
 import { VideoPresenter } from "@adapter/driver/http/presenters/video-presenter";
 import { InvalidFileException } from "@core/domain/exceptions/file-exceptions";
 import { IMensageria } from "../ports/mensageria";
+import { SQSServiceException } from "@aws-sdk/client-sqs";
 
 export class UploadVideoUseCase {
     private readonly queueUrl: string
@@ -15,6 +16,8 @@ export class UploadVideoUseCase {
         }
 
     async execute({ filePath, originalName }: { filePath: string, originalName: string }): Promise<VideoPresenter> {
+        let file: VideoFile | undefined;
+
         try {
             const fileSize = getFileSize(filePath);
             const fileType = getFileType(filePath);
@@ -23,7 +26,7 @@ export class UploadVideoUseCase {
                 throw new InvalidFileException('File is empty or does not exist.');
             }
 
-            const file = new VideoFile({
+            file = new VideoFile({
                 originalName,
                 filePath,
                 size: fileSize,
@@ -45,6 +48,10 @@ export class UploadVideoUseCase {
             
             return VideoPresenter.fromDomain(file);
         } catch (error) {
+            if (error instanceof SQSServiceException && file) {
+                this.videoRepository.deleteVideo(file.savedName);
+            }
+
             removeFile(filePath);
             throw error;
         }

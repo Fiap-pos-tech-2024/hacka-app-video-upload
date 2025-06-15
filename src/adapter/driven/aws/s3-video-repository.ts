@@ -1,5 +1,10 @@
 import fs from 'fs';
-import { PutObjectCommand, PutObjectCommandInput, S3Client } from '@aws-sdk/client-s3';
+import { 
+    PutObjectCommand, 
+    PutObjectCommandInput, 
+    S3Client, 
+    DeleteObjectCommand 
+} from '@aws-sdk/client-s3';
 import { VideoFile } from "@core/domain/entities/video-file";
 import { IVideoRepository } from "@core/application/ports/video-repository";
 import { S3UploadException } from '@core/domain/exceptions/s3-exceptions';
@@ -39,6 +44,17 @@ export default class S3VideoRepository implements IVideoRepository {
         } catch (error: any) {
             console.error('Erro ao fazer upload do vídeo para o S3:', error);
             throw new S3UploadException('Video upload failed.');
+        }
+    }
+
+    async deleteVideo(savedName: string): Promise<void> {
+        try {
+            await this.s3.send(new DeleteObjectCommand({
+                Bucket: this.bucketName,
+                Key: savedName,
+            }));
+        } catch (error) {
+            console.error('Erro ao deletar vídeo do S3:', error);
         }
     }
 }

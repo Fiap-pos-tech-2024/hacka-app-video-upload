@@ -30,4 +30,3 @@ create-env-file:
 
 down:
 	docker stop $(LOCALSTACK_CONTAINER_NAME)
-	docker stop $(POSTGRES_CONTAINER_NAME)
