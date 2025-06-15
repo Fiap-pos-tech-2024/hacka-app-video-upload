@@ -15,6 +15,9 @@ up:
 create-s3:
 	aws --endpoint-url=http://localhost:4566 s3api create-bucket --bucket $(BUCKET_NAME)
 
+create-queue:
+	aws --endpoint-url=http://localhost:4566 sqs create-queue --queue-name uploaded-video-queue
+
 create-env-file:
 	echo "AWS_ACCESS_KEY_ID=localstack" > .env
 	echo "AWS_SECRET_ACCESS_KEY=localstack" >> .env
@@ -22,6 +25,8 @@ create-env-file:
 	echo "AWS_LOCAL_ENDPOINT=http://localhost:4566" >> .env
 	echo "ENVIRONMENT=local" >> .env
 	echo "AWS_BUCKET_NAME=$(BUCKET_NAME)" >> .env
+	UPLOADED_VIDEO_QUEUE_URL=$$(aws --endpoint-url=http://localhost:4566 sqs get-queue-url --queue-name uploaded-video-queue --output text --query 'QueueUrl'); \
+	echo "UPLOADED_VIDEO_QUEUE_URL=$$UPLOADED_VIDEO_QUEUE_URL" >> .env
 
 down:
 	docker stop $(LOCALSTACK_CONTAINER_NAME)

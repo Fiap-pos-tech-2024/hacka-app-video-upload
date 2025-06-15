@@ -3,9 +3,16 @@ import { IVideoRepository } from "../ports/video-repository";
 import { getFileSize, getFileType, removeFile } from "@core/application/utils/file-utils";
 import { VideoPresenter } from "@adapter/driver/http/presenters/video-presenter";
 import { InvalidFileException } from "@core/domain/exceptions/file-exceptions";
+import { IMensageria } from "../ports/mensageria";
 
 export class UploadVideoUseCase {
-    constructor(private readonly videoRepository: IVideoRepository) {}
+    private readonly queueUrl: string
+
+    constructor(
+        private readonly videoRepository: IVideoRepository, 
+        private readonly mensageria: IMensageria) {
+            this.queueUrl = process.env.UPLOADED_VIDEO_QUEUE_URL ?? ''
+        }
 
     async execute({ filePath, originalName }: { filePath: string, originalName: string }): Promise<VideoPresenter> {
         try {
@@ -22,8 +29,19 @@ export class UploadVideoUseCase {
                 size: fileSize,
                 type: fileType,
             });
-        
+
             await this.videoRepository.saveVideo(file);
+
+            console.log(`Video file saved: ${file.savedName}`);
+
+            await this.mensageria.sendMessage(this.queueUrl, {
+                fileName: file.savedName,
+                originalName: file.originalName,
+                size: file.size,
+                type: file.type,
+            });
+            
+            console.log(`Message sent to SQS queue: ${this.queueUrl}`);
             
             return VideoPresenter.fromDomain(file);
         } catch (error) {

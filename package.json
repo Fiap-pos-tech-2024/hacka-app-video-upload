@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.828.0",
+    "@aws-sdk/client-sqs": "^3.828.0",
     "dotenv": "^16.5.0",
     "express": "^4.21.2",
     "multer": "^2.0.1",
