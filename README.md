@@ -59,6 +59,13 @@ Para parar o LocalStack:
 make down
 ```
 
+## Documentação e Testes via Swagger
+
+A aplicação possui documentação interativa e permite testar os endpoints diretamente pelo Swagger UI.
+
+- Acesse: [http://localhost:3001/docs](http://localhost:3001/docs)
+- Explore e execute as rotas da API diretamente pela interface web.
+
 ## Observações
 - Apenas arquivos de vídeo são aceitos
 - O tamanho máximo permitido é de 1GB

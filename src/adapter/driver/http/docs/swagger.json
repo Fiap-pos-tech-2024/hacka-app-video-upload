@@ -1,0 +1,145 @@
+{
+    "openapi": "1.0.0",
+    "info": {
+        "title": "Video API",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/video/upload": {
+            "post": {
+                "summary": "Upload de vídeo",
+                "description": "Faz upload de um arquivo de vídeo e retorna os dados do vídeo salvo.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "video": {
+                                        "type": "string",
+                                        "format": "binary",
+                                        "description": "Arquivo de vídeo a ser enviado."
+                                    }
+                                },
+                                "required": [
+                                    "video"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Dados do vídeo salvo.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/VideoPresenter"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Nenhum arquivo enviado ou arquivo inválido.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "examples": {
+                                    "NoFile": {
+                                        "summary": "Nenhum arquivo enviado",
+                                        "value": { "statusCode": 400, "message": "No video file uploaded" }
+                                    },
+                                    "InvalidFile": {
+                                        "summary": "Arquivo inválido",
+                                        "value": { "statusCode": 400, "message": "File is empty or does not exist." }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "413": {
+                        "description": "Arquivo muito grande.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "examples": {
+                                    "FileTooLarge": {
+                                        "summary": "Arquivo excede o limite de tamanho",
+                                        "value": { "statusCode": 413, "message": "Tamanho de arquivo excedido" }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno do servidor.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "examples": {
+                                    "SQS": {
+                                        "summary": "Erro ao enviar para SQS",
+                                        "value": { "statusCode": 500, "message": "Erro seguir para etapa de processamento do video" }
+                                    },
+                                    "Generic": {
+                                        "summary": "Erro interno genérico",
+                                        "value": { "statusCode": 500, "message": "Erro ao processar arquivo" }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Video"
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "VideoPresenter": {
+                "type": "object",
+                "properties": {
+                    "originalName": {
+                        "type": "string",
+                        "description": "Nome original do arquivo enviado."
+                    },
+                    "savedName": {
+                        "type": "string",
+                        "description": "Nome salvo no armazenamento."
+                    },
+                    "size": {
+                        "type": "integer",
+                        "description": "Tamanho do arquivo em bytes."
+                    },
+                    "type": {
+                        "type": "string",
+                        "description": "Tipo MIME do arquivo."
+                    }
+                },
+                "required": [
+                    "originalName",
+                    "savedName",
+                    "size",
+                    "type"
+                ]
+            },
+            "ErrorResponse": {
+                "type": "object",
+                "properties": {
+                    "statusCode": { "type": "integer" },
+                    "message": { "type": "string" }
+                },
+                "required": ["statusCode", "message"]
+            }
+        }
+    }
+}
