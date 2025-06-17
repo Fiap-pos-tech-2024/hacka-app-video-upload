@@ -1,6 +1,6 @@
-import { SQSServiceException } from '@aws-sdk/client-sqs';
+import { SQSServiceException } from '@aws-sdk/client-sqs'
 import { Request, Response, NextFunction } from 'express'
-import { MulterError } from 'multer';
+import { MulterError } from 'multer'
 
 const globalErrorHandler = (
   err: Error,
@@ -9,13 +9,17 @@ const globalErrorHandler = (
   _next: NextFunction,
 ) => {
   if (err instanceof SQSServiceException) {
-    res.status(500).json({ statusCode: 500, message: 'Erro seguir para etapa de processamento do video' });
-    return;
+    res.status(500).json({ 
+      statusCode: 500, 
+      message: 'Erro seguir para etapa de processamento do video' 
+    })
+    return
   }
 
+  let error: MulterError | undefined
   switch (err.name) {
     case 'MulterError':
-      let error = err as MulterError
+      error = err as MulterError
       if (error.code === 'LIMIT_FILE_SIZE') {
         res.status(413).json({ statusCode: 413, message: 'Tamanho de arquivo excedido' })
       }

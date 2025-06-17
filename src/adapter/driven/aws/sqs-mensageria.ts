@@ -16,12 +16,8 @@ export default class SqsMensageria {
         const params = {
             QueueUrl: queueUrl,
             MessageBody: JSON.stringify(message),
-        };
-
-        try {
-            await this.client.send(new SendMessageCommand(params));
-        } catch (error) {
-            throw error;
         }
+
+        await this.client.send(new SendMessageCommand(params))
     }
 }

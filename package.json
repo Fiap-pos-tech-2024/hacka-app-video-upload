@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start:dev": "ts-node-dev --ignore-watch node_modules -r tsconfig-paths/register src/adapter/driver/http/server.ts"
+    "start:dev": "ts-node-dev --ignore-watch node_modules -r tsconfig-paths/register src/adapter/driver/http/server.ts",
+    "lint": "eslint . --ext .ts,.js --fix"
   },
   "author": "",
   "license": "ISC",
@@ -13,6 +14,9 @@
     "@types/multer": "^1.4.13",
     "@types/swagger-ui-express": "^4.1.8",
     "@types/uuid": "^10.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.34.1",
+    "@typescript-eslint/parser": "^8.34.1",
+    "eslint": "^8.57.1",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.8.3"

@@ -1,5 +1,5 @@
-const tsConfig = require('./tsconfig.json')
-const tsConfigPaths = require('tsconfig-paths')
+import tsConfig from './tsconfig.json'
+import tsConfigPaths from 'tsconfig-paths'
 
 const baseUrl = './dist'
 tsConfigPaths.register({
