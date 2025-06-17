@@ -9,6 +9,17 @@
             "post": {
                 "summary": "Upload de vídeo",
                 "description": "Faz upload de um arquivo de vídeo e retorna os dados do vídeo salvo.",
+                "parameters": [
+                    {
+                        "name": "x-user-email",
+                        "in": "header",
+                        "description": "E-mail do usuário que está enviando o vídeo.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "requestBody": {
                     "required": true,
                     "content": {
