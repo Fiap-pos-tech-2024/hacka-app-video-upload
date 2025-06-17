@@ -1,0 +1,7 @@
+export enum VideoFileStatus {
+  CREATED = 'CREATED',
+  IN_PROCESSING = 'IN_PROCESSING',
+  FINISHED = 'FINISHED',
+  COMPLETED = 'COMPLETED',
+  FAILED = 'FAILED'
+}

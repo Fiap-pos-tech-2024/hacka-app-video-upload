@@ -1,22 +1,25 @@
 import { VideoFile } from '@core/domain/entities/video-file'
-import { IVideoRepository } from '../ports/video-repository'
+import { IVideoStorage } from '../ports/video-storage'
 import { getFileSize, getFileType, removeFile } from '@core/application/utils/file-utils'
 import { VideoPresenter } from '@adapter/driver/http/presenters/video-presenter'
 import { InvalidFileException } from '@core/domain/exceptions/file-exceptions'
 import { IMensageria } from '../ports/mensageria'
 import { SQSServiceException } from '@aws-sdk/client-sqs'
+import { IVideoMetadataRepository } from '../ports/video-metadata-repository'
 
 export class UploadVideoUseCase {
     private readonly queueUrl: string
 
     constructor(
-        private readonly videoRepository: IVideoRepository, 
-        private readonly mensageria: IMensageria) {
+        private readonly videoStorage: IVideoStorage,
+        private readonly videoMetadataRepository: IVideoMetadataRepository,
+        private readonly mensageria: IMensageria,
+    ) {
             this.queueUrl = process.env.UPLOADED_VIDEO_QUEUE_URL ?? ''
         }
 
     async execute(
-        { filePath, originalName }: { filePath: string, originalName: string }
+        { filePath, originalName, email }: { filePath: string, originalName: string, email: string }
     ): Promise<VideoPresenter> {
         let file: VideoFile | undefined
 
@@ -35,7 +38,14 @@ export class UploadVideoUseCase {
                 type: fileType,
             })
 
-            await this.videoRepository.saveVideo(file)
+            await this.videoStorage.saveVideo(file)
+            await this.videoMetadataRepository.saveVideo({
+                id: file.getId(),
+                originalName: file.originalName,
+                savedName: file.savedName,
+                customerEmail: email,
+                status: file.status
+            })
 
             console.log(`Video file saved: ${file.savedName}`)
 
@@ -51,7 +61,7 @@ export class UploadVideoUseCase {
             return VideoPresenter.fromDomain(file)
         } catch (error) {
             if (error instanceof SQSServiceException && file) {
-                this.videoRepository.deleteVideo(file.savedName)
+                this.videoStorage.deleteVideo(file.savedName)
             }
 
             removeFile(filePath)

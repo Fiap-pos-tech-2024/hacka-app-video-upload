@@ -6,10 +6,10 @@ import {
     DeleteObjectCommand 
 } from '@aws-sdk/client-s3'
 import { VideoFile } from '@core/domain/entities/video-file'
-import { IVideoRepository } from '@core/application/ports/video-repository'
+import { IVideoStorage } from '@core/application/ports/video-storage'
 import { S3UploadException } from '@core/domain/exceptions/s3-exceptions'
 
-export default class S3VideoRepository implements IVideoRepository {
+export default class S3VideoStorage implements IVideoStorage {
     private readonly s3: S3Client
     private readonly bucketName: string
 
