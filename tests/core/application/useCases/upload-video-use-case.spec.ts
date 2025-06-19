@@ -1,4 +1,4 @@
-import { UploadVideoUseCase } from './upload-video-use-case'
+import { UploadVideoUseCase } from '@core/application/useCases/upload-video-use-case'
 import { 
   FileSizeExceededException, InvalidFileException, InvalidFileTypeException 
 } from '@core/domain/exceptions/file-exceptions'
