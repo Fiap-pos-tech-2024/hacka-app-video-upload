@@ -6,6 +6,7 @@ import { VideoPresenter } from '@adapter/driver/http/presenters/video-presenter'
 import { 
   getFileSize as _getFileSize, getFileType as _getFileType, removeFile as _removeFile 
 } from '@core/application/utils/file-utils'
+import { VideoFileStatus } from '@core/domain/enums/video-file-status'
 
 
 jest.mock('@core/application/utils/file-utils', () => ({
@@ -41,6 +42,9 @@ describe('UploadVideoUseCase', () => {
     mensageria = {
       sendMessage: jest.fn(),
     }
+
+    process.env.UPLOADED_VIDEO_QUEUE_URL = 'https://sqs.us-east-1.amazonaws.com/123456789012/my-queue'
+
     useCase = new UploadVideoUseCase(videoStorage, videoMetadataRepository, mensageria)
     jest.clearAllMocks()
   })
@@ -48,11 +52,54 @@ describe('UploadVideoUseCase', () => {
   it('deve salvar vídeo, metadados e enviar mensagem com sucesso', async () => {
     getFileSize.mockReturnValue(100)
     getFileType.mockReturnValue('video/mp4')
+    const spy = jest.spyOn(console, 'info').mockImplementation(() => {})
+    const result = await useCase.execute({ filePath, originalVideoName, customerId })
+
+    expect(spy).toHaveBeenCalledWith('Video file saved: video.mp4')
+    expect(spy).toHaveBeenCalledWith('Message sent to SQS queue: https://sqs.us-east-1.amazonaws.com/123456789012/my-queue')
+    expect(videoStorage.saveVideo).toHaveBeenCalledWith(expect.objectContaining({
+      originalVideoName,
+      filePath,
+      size: 100,
+      type: 'video/mp4',
+    }))
+    expect(videoMetadataRepository.saveVideo).toHaveBeenCalledWith(expect.objectContaining({
+      id: expect.any(String),
+      originalVideoName,
+      savedVideoName: 'video.mp4',
+      customerId,
+      status: VideoFileStatus.CREATED,
+    }))
+    expect(mensageria.sendMessage).toHaveBeenCalledWith(
+      'https://sqs.us-east-1.amazonaws.com/123456789012/my-queue',
+      expect.objectContaining({
+        savedVideoName: 'video.mp4',
+        originalVideoName,
+        size: 100,
+        type: 'video/mp4',
+      })
+    )
+    expect(result).toBeInstanceOf(VideoPresenter)
+  })
+
+  it('deve salvar vídeo, metadados e enviar mensagem com sucesso sem fila SQS', async () => {
+    getFileSize.mockReturnValue(100)
+    getFileType.mockReturnValue('video/mp4')
+    delete process.env.UPLOADED_VIDEO_QUEUE_URL
+    useCase = new UploadVideoUseCase(videoStorage, videoMetadataRepository, mensageria)
     const result = await useCase.execute({ filePath, originalVideoName, customerId })
 
     expect(videoStorage.saveVideo).toHaveBeenCalled()
     expect(videoMetadataRepository.saveVideo).toHaveBeenCalled()
-    expect(mensageria.sendMessage).toHaveBeenCalled()
+    expect(mensageria.sendMessage).toHaveBeenCalledWith(
+      '',
+      expect.objectContaining({
+        savedVideoName: 'video.mp4',
+        originalVideoName,
+        size: 100,
+        type: 'video/mp4',
+      })
+    )
     expect(result).toBeInstanceOf(VideoPresenter)
   })
 
@@ -61,9 +108,13 @@ describe('UploadVideoUseCase', () => {
     getFileType.mockReturnValue('video/mp4')
 
     await expect(useCase.execute({ filePath, originalVideoName, customerId }))
-      .rejects.toThrow(InvalidFileException)
+        .rejects.toMatchObject({
+          message: 'File is empty.',
+          constructor: InvalidFileException
+        })
     expect(videoStorage.saveVideo).not.toHaveBeenCalled()
     expect(videoMetadataRepository.saveVideo).not.toHaveBeenCalled()
+    expect(videoStorage.deleteVideo).not.toHaveBeenCalled()
     expect(mensageria.sendMessage).not.toHaveBeenCalled()
     expect(removeFile).toHaveBeenCalledWith(filePath)
   })
@@ -124,4 +175,20 @@ describe('UploadVideoUseCase', () => {
     expect(videoStorage.deleteVideo).toHaveBeenCalled()
     expect(removeFile).toHaveBeenCalledWith(filePath)
   })
+
+  it('deve compensar apenas tmp storage se falhar após salvar vídeo no storage', async () => {
+    getFileSize.mockReturnValue(100)
+    getFileType.mockReturnValue('video/mp4')
+    videoStorage.saveVideo.mockRejectedValue(new Error('Erro Storage'))
+
+    await expect(useCase.execute({ filePath, originalVideoName, customerId }))
+      .rejects.toThrow('Erro Storage')
+
+    expect(videoStorage.saveVideo).toHaveBeenCalled()
+    expect(videoMetadataRepository.saveVideo).not.toHaveBeenCalled()
+    expect(mensageria.sendMessage).not.toHaveBeenCalled()
+    expect(videoMetadataRepository.deleteVideoById).not.toHaveBeenCalled()
+    expect(videoStorage.deleteVideo).not.toHaveBeenCalled()
+    expect(removeFile).toHaveBeenCalledWith(filePath)
+  })      
 })

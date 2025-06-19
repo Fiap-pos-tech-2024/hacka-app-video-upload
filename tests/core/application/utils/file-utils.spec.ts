@@ -48,6 +48,17 @@ describe('file-utils', () => {
     it('deve ser case insensitive', () => {
       expect(getFileType('video.MP4')).toBe('video/mp4')
     })
+    it('deve retornar unknown para arquivos sem nome e extensão', () => {
+      expect(getFileType('.')).toBe('unknown')
+    })
+    it('deve retornar unknown para arquivos sem extensão', () => {
+        expect(getFileType('file')).toBe('unknown')
+    })
+    it('deve falhar se a lógica de extração da extensão for alterada para não pegar a última parte', 
+      () => {
+        expect(getFileType('archive.tar.mp4')).toBe('video/mp4')
+        expect(getFileType('archive.mp4.tar')).toBe('unknown')
+    })
   })
 
   describe('removeFile', () => {

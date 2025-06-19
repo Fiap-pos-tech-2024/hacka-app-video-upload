@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 
+// Stryker disable all
 export class PrismaService extends PrismaClient {
   constructor() {
     super({

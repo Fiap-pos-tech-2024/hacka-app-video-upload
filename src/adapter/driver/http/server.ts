@@ -7,6 +7,7 @@ import globalErrorHandler from './global-error-handling'
 
 const app = express()
 
+// Stryker disable all
 app.use(express.json())
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs))
 

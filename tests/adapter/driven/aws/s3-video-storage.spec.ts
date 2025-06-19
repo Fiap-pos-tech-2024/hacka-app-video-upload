@@ -67,7 +67,14 @@ describe('S3VideoStorage', () => {
     const sendMock = jest.fn().mockRejectedValue(new Error('fail'))
     ;(S3Client as jest.Mock).mockImplementation(() => ({ send: sendMock }))
     const storage = new S3VideoStorage()
-    await expect(storage.saveVideo(videoMock)).rejects.toThrow(S3UploadException)
+    const spy = jest.spyOn(console, 'error').mockImplementation(() => {})
+    await expect(storage.saveVideo(videoMock))
+        .rejects.toMatchObject({
+          message: 'Video upload failed.',
+          constructor: S3UploadException
+        })
+    expect(spy).toHaveBeenCalledWith('S3 video upload failed: ', expect.any(Error))
+    spy.mockRestore()
   })
 
   it('deve chamar DeleteObjectCommand ao deletar vídeo', async () => {
@@ -87,7 +94,7 @@ describe('S3VideoStorage', () => {
     const storage = new S3VideoStorage()
     const spy = jest.spyOn(console, 'error').mockImplementation(() => {})
     await storage.deleteVideo('video.mp4')
-    expect(spy).toHaveBeenCalledWith('Erro ao deletar vídeo do S3:', expect.any(Error))
+    expect(spy).toHaveBeenCalledWith('Failed to delete video on S3: ', expect.any(Error))
     spy.mockRestore()
   })
 })

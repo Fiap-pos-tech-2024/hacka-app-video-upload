@@ -40,6 +40,7 @@ describe('multer-config', () => {
     const file = { mimetype: 'image/png' } as Express.Multer.File
     const cb = (err: Error | null, accept?: boolean) => {
       expect(err).toBeInstanceOf(InvalidFileTypeException)
+      expect(err!.message).toBe('Invalid video file type')
       expect(accept).toBeUndefined()
       done()
     }

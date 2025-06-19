@@ -57,7 +57,7 @@ export class UploadVideoUseCase {
             })
             metadataSaved = true
 
-            console.log(`Video file saved: ${file.savedVideoName}`)
+            console.info(`Video file saved: ${file.savedVideoName}`)
 
             await this.mensageria.sendMessage(this.queueUrl, {
                 savedVideoName: file.savedVideoName,
@@ -66,7 +66,7 @@ export class UploadVideoUseCase {
                 type: file.type,
             })
             
-            console.log(`Message sent to SQS queue: ${this.queueUrl}`)
+            console.info(`Message sent to SQS queue: ${this.queueUrl}`)
             
             return VideoPresenter.fromDomain(file)
         } catch (error) {

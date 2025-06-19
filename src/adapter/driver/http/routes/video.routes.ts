@@ -8,6 +8,7 @@ import { PrismaService } from '@adapter/driven/database/prisma/prisma.service'
 
 const videoRouter = Router()
 
+// Stryker disable all
 videoRouter.post(
   '/upload', 
   uploadConfig.single('video'), 

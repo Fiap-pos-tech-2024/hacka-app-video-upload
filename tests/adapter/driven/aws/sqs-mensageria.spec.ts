@@ -47,3 +47,14 @@ describe('SqsMensageria', () => {
     })
   })
 })
+it('deve falhar se ENVIRONMENT for checado como true ao invés de "local"', () => {
+    process.env.AWS_REGION = 'sa-east-1'
+    process.env.ENVIRONMENT = 'local'
+    process.env.AWS_LOCAL_ENDPOINT = 'http://localhost:4566'
+    new SqsMensageria()
+    expect(SQSClient).toHaveBeenCalledWith({ region: 'sa-east-1', endpoint: 'http://localhost:4566' })
+
+    process.env.ENVIRONMENT = 'production'
+    new SqsMensageria()
+    expect(SQSClient).toHaveBeenCalledWith({ region: 'sa-east-1' })
+})

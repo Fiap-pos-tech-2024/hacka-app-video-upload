@@ -42,7 +42,7 @@ export default class S3VideoStorage implements IVideoStorage {
 
             await this.s3.send(new PutObjectCommand(uploadParams))
         } catch (error: unknown) {
-            console.error('Erro ao fazer upload do vídeo para o S3:', error)
+            console.error('S3 video upload failed: ', error)
             throw new S3UploadException('Video upload failed.')
         }
     }
@@ -54,7 +54,7 @@ export default class S3VideoStorage implements IVideoStorage {
                 Key: savedVideoName,
             }))
         } catch (error) {
-            console.error('Erro ao deletar vídeo do S3:', error)
+            console.error('Failed to delete video on S3: ', error)
         }
     }
 }
