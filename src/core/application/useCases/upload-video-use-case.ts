@@ -4,7 +4,6 @@ import { getFileSize, getFileType, removeFile } from '@core/application/utils/fi
 import { VideoPresenter } from '@adapter/driver/http/presenters/video-presenter'
 import { InvalidFileException } from '@core/domain/exceptions/file-exceptions'
 import { IMensageria } from '../ports/mensageria'
-import { SQSServiceException } from '@aws-sdk/client-sqs'
 import { IVideoMetadataRepository } from '../ports/video-metadata-repository'
 
 export class UploadVideoUseCase {
@@ -22,6 +21,8 @@ export class UploadVideoUseCase {
         { filePath, originalName, email }: { filePath: string, originalName: string, email: string }
     ): Promise<VideoPresenter> {
         let file: VideoFile | undefined
+        let videoSaved = false
+        let metadataSaved = false
 
         try {
             const fileSize = getFileSize(filePath)
@@ -39,6 +40,8 @@ export class UploadVideoUseCase {
             })
 
             await this.videoStorage.saveVideo(file)
+            videoSaved = true
+
             await this.videoMetadataRepository.saveVideo({
                 id: file.getId(),
                 originalName: file.originalName,
@@ -46,6 +49,7 @@ export class UploadVideoUseCase {
                 customerEmail: email,
                 status: file.status
             })
+            metadataSaved = true
 
             console.log(`Video file saved: ${file.savedName}`)
 
@@ -60,10 +64,13 @@ export class UploadVideoUseCase {
             
             return VideoPresenter.fromDomain(file)
         } catch (error) {
-            if (error instanceof SQSServiceException && file) {
-                this.videoStorage.deleteVideo(file.savedName)
+            // Compensação para garantir atomicidade
+            if (file && metadataSaved) {
+                await this.videoMetadataRepository.deleteVideoById(file.getId())
             }
-
+            if (file && videoSaved) {
+                await this.videoStorage.deleteVideo(file.savedName)
+            }
             removeFile(filePath)
             throw error
         }

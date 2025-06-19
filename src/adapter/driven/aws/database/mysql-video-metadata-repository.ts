@@ -12,4 +12,10 @@ export default class MySQLVideoMetadataRepository implements IVideoMetadataRepos
             data
         })
     }
+
+    async deleteVideoById(id: string): Promise<void> {
+        await this.prisma.video.delete({
+            where: { id }
+        })
+    }
 }
