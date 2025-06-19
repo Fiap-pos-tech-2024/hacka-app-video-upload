@@ -6,8 +6,8 @@ import { FileSizeExceededException, InvalidFileTypeException } from '../exceptio
 export class VideoFile {
   private id: UniqueEntityId
   
-  readonly originalName: string
-  readonly savedName: string
+  readonly originalVideoName: string
+  readonly savedVideoName: string
   readonly filePath: string
   readonly size: number
   readonly type: string
@@ -17,14 +17,14 @@ export class VideoFile {
   static readonly validVideoTypes = ['video/mp4', 'video/mpeg', 'video/avi', 'video/mkv']
 
   constructor({ 
-    originalName, 
+    originalVideoName, 
     filePath, 
     size, 
     type,
     id
-  }: { filePath: string; size: number; type: string; originalName: string; id?: string }) {
-    this.originalName = originalName
-    this.savedName =  path.basename(filePath)
+  }: { filePath: string; size: number; type: string; originalVideoName: string; id?: string }) {
+    this.originalVideoName = originalVideoName
+    this.savedVideoName =  path.basename(filePath)
     this.filePath = filePath
     this.size = size
     this.type = type

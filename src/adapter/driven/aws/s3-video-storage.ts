@@ -29,12 +29,12 @@ export default class S3VideoStorage implements IVideoStorage {
 
             const uploadParams: PutObjectCommandInput = {
                 Bucket: this.bucketName,
-                Key: video.savedName,
+                Key: video.savedVideoName,
                 Body: videoFileStream,
                 ContentType: video.type,
-                Tagging: `originalName=${video.originalName}`,
+                Tagging: `originalVideoName=${video.originalVideoName}`,
                 Metadata: {
-                    originalName: video.originalName,
+                    originalVideoName: video.originalVideoName,
                     type: video.type,
                     size: video.size.toString(),
                 },
@@ -47,11 +47,11 @@ export default class S3VideoStorage implements IVideoStorage {
         }
     }
 
-    async deleteVideo(savedName: string): Promise<void> {
+    async deleteVideo(savedVideoName: string): Promise<void> {
         try {
             await this.s3.send(new DeleteObjectCommand({
                 Bucket: this.bucketName,
-                Key: savedName,
+                Key: savedVideoName,
             }))
         } catch (error) {
             console.error('Erro ao deletar vídeo do S3:', error)

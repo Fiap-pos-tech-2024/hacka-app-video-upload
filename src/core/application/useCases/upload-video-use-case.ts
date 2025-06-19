@@ -6,6 +6,12 @@ import { InvalidFileException } from '@core/domain/exceptions/file-exceptions'
 import { IMensageria } from '../ports/mensageria'
 import { IVideoMetadataRepository } from '../ports/video-metadata-repository'
 
+interface UploadVideoUseCaseDto {
+    filePath: string
+    originalVideoName: string
+    customerId: string
+}
+
 export class UploadVideoUseCase {
     private readonly queueUrl: string
 
@@ -18,7 +24,7 @@ export class UploadVideoUseCase {
         }
 
     async execute(
-        { filePath, originalName, email }: { filePath: string, originalName: string, email: string }
+        { filePath, originalVideoName, customerId }: UploadVideoUseCaseDto
     ): Promise<VideoPresenter> {
         let file: VideoFile | undefined
         let videoSaved = false
@@ -33,7 +39,7 @@ export class UploadVideoUseCase {
             }
 
             file = new VideoFile({
-                originalName,
+                originalVideoName,
                 filePath,
                 size: fileSize,
                 type: fileType,
@@ -44,18 +50,18 @@ export class UploadVideoUseCase {
 
             await this.videoMetadataRepository.saveVideo({
                 id: file.getId(),
-                originalName: file.originalName,
-                savedName: file.savedName,
-                customerEmail: email,
+                originalVideoName: file.originalVideoName,
+                savedVideoName: file.savedVideoName,
+                customerId,
                 status: file.status
             })
             metadataSaved = true
 
-            console.log(`Video file saved: ${file.savedName}`)
+            console.log(`Video file saved: ${file.savedVideoName}`)
 
             await this.mensageria.sendMessage(this.queueUrl, {
-                fileName: file.savedName,
-                originalName: file.originalName,
+                savedVideoName: file.savedVideoName,
+                originalVideoName: file.originalVideoName,
                 size: file.size,
                 type: file.type,
             })
@@ -69,7 +75,7 @@ export class UploadVideoUseCase {
                 await this.videoMetadataRepository.deleteVideoById(file.getId())
             }
             if (file && videoSaved) {
-                await this.videoStorage.deleteVideo(file.savedName)
+                await this.videoStorage.deleteVideo(file.savedVideoName)
             }
             removeFile(filePath)
             throw error

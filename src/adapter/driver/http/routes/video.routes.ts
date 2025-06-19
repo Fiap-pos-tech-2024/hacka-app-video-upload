@@ -13,15 +13,15 @@ videoRouter.post(
   upload.single('video'), 
   async (req: Request, res: Response, next: NextFunction) => {
     const videoFile = req.file
-    const userEmail = req.header('x-user-email')
+    const customerId = req.header('x-customer-id')
 
     try {
       if (!videoFile) {
         res.status(400).json({ statusCode: 400, message: 'No video file uploaded' })
         return
       }
-      if (!userEmail) {
-        res.status(400).json({ statusCode: 400, message: 'Missing x-user-email header' })
+      if (!customerId) {
+        res.status(400).json({ statusCode: 400, message: 'Missing x-customer-id header' })
         return
       }
       
@@ -33,8 +33,8 @@ videoRouter.post(
 
       const response = await uploadVideoUseCase.execute({
         filePath: videoFile.path,
-        originalName: videoFile.originalname,
-        email: userEmail as string
+        originalVideoName: videoFile.originalname,
+        customerId: customerId as string
       })
 
       res.status(200).json(response)

@@ -119,11 +119,11 @@
             "VideoPresenter": {
                 "type": "object",
                 "properties": {
-                    "originalName": {
+                    "originalVideoName": {
                         "type": "string",
                         "description": "Nome original do arquivo enviado."
                     },
-                    "savedName": {
+                    "savedVideoName": {
                         "type": "string",
                         "description": "Nome salvo no armazenamento."
                     },
@@ -137,8 +137,8 @@
                     }
                 },
                 "required": [
-                    "originalName",
-                    "savedName",
+                    "originalVideoName",
+                    "savedVideoName",
                     "size",
                     "type"
                 ]

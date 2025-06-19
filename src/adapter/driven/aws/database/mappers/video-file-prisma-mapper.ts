@@ -4,9 +4,9 @@ import { SaveVideoMetadataDTO } from '@core/application/dtos/save-video-metadata
 export class VideoFilePrismaMapper {
   static toPrisma(video: SaveVideoMetadataDTO): Prisma.VideoUncheckedCreateInput {
     return {
-      savedVideoName: video.savedName,
-      originalName: video.originalName,
-      customerEmail: video.customerEmail,
+      savedVideoName: video.savedVideoName,
+      originalVideoName: video.originalVideoName,
+      customerId: video.customerId,
       status: video.status,
       id: video.id
     }
