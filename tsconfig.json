@@ -5,7 +5,7 @@
       "@core/*": ["src/core/*"],
       "@adapter/*": ["src/adapter/*"]
     },
-    "types": [],
+    "types": ["jest"],
     "target": "es2020",
     "module": "commonjs",
     "esModuleInterop": true,

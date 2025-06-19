@@ -34,8 +34,8 @@ export class UploadVideoUseCase {
             const fileSize = getFileSize(filePath)
             const fileType = getFileType(filePath)
 
-            if (fileSize === 0 || fileType === 'unknown') {
-                throw new InvalidFileException('File is empty or does not exist.')
+            if (fileSize === 0) {
+                throw new InvalidFileException('File is empty.')
             }
 
             file = new VideoFile({
