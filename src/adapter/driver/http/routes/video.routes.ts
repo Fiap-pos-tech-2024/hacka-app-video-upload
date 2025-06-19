@@ -3,8 +3,8 @@ import upload from '../config/multer-config'
 import { UploadVideoUseCase } from '@core/application/useCases/upload-video-use-case'
 import S3VideoStorage from '@adapter/driven/aws/s3-video-storage'
 import SqsMensageria from '@adapter/driven/aws/sqs-mensageria'
-import MySQLVideoMetadataRepository from '@adapter/driven/aws/database/mysql-video-metadata-repository'
-import { PrismaService } from '@adapter/driven/aws/database/prisma/prisma.service'
+import MySQLVideoMetadataRepository from '@adapter/driven/database/mysql-video-metadata-repository'
+import { PrismaService } from '@adapter/driven/database/prisma/prisma.service'
 
 const videoRouter = Router()
 

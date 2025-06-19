@@ -38,6 +38,6 @@
     "uuid": "^11.1.0"
   },
   "prisma": {
-    "schema": "src/adapter/driven/aws/database/prisma/schema.prisma"
+    "schema": "src/adapter/driven/database/prisma/schema.prisma"
   }
 }
