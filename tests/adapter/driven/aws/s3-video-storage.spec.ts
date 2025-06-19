@@ -19,16 +19,23 @@ describe('S3VideoStorage', () => {
   } as unknown as VideoFile
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    jest.clearAllMocks()            
     process.env.AWS_REGION = 'us-east-1'
     process.env.AWS_BUCKET_NAME = 'bucket-test'
-    process.env.ENVIRONMENT = ''
   })
 
   it('deve instanciar S3Client e bucket corretamente', () => {
     const storage = new S3VideoStorage()
     expect(S3Client).toHaveBeenCalledWith({ region: 'us-east-1' })
     expect(storage['bucketName']).toBe('bucket-test')
+  })
+
+  it('deve instanciar S3Client e bucket corretamente com valores default', () => {
+    delete process.env.AWS_REGION
+    delete process.env.AWS_BUCKET_NAME
+    const storage = new S3VideoStorage()
+    expect(S3Client).toHaveBeenCalledWith({ region: 'us-east-1' })
+    expect(storage['bucketName']).toBe('default-bucket-name')
   })
 
   it('deve instanciar o S3Client com endpoint local se ENVIRONMENT=local', () => {

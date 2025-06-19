@@ -5,7 +5,8 @@
   "scripts": {
     "start:dev": "ts-node-dev --ignore-watch node_modules -r tsconfig-paths/register src/adapter/driver/http/server.ts",
     "lint": "eslint . --ext .ts,.js --fix",
-    "test": "jest"
+    "test": "jest",
+    "test:coverage": "jest --coverage"
   },
   "author": "",
   "license": "ISC",
