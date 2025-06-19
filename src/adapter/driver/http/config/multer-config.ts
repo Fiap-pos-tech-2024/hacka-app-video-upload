@@ -1,5 +1,6 @@
-import multer from 'multer'
 import path from 'path'
+import multer from 'multer'
+import { Request } from 'express'
 import { v4 as uuidv4 }  from 'uuid'
 import { InvalidFileTypeException } from '@core/domain/exceptions/file-exceptions'
 
@@ -13,16 +14,18 @@ const storage = multer.diskStorage({
   },
 })
 
-const upload = multer({ 
+const fileFilter = (_req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
+  if (file.mimetype.startsWith('video/')) {
+    cb(null, true)
+  } else {
+    cb(new InvalidFileTypeException('Invalid video file type'))
+  }
+}
+
+const uploadConfig = multer({ 
   storage,
   limits: { fileSize: 1024 * 1024 * 1024 }, // 1GB
-  fileFilter: (_req, file, cb) => {
-    if (file.mimetype.startsWith('video/')) {
-      cb(null, true)
-    } else {
-      cb(new InvalidFileTypeException('Invalid video file type'))
-    }
-  }
+  fileFilter
 })
 
-export default upload
+export { uploadConfig, storage, fileFilter }

@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response, Router } from 'express'
-import upload from '../config/multer-config'
+import { uploadConfig } from '../config/multer-config'
 import { UploadVideoUseCase } from '@core/application/useCases/upload-video-use-case'
 import S3VideoStorage from '@adapter/driven/aws/s3-video-storage'
 import SqsMensageria from '@adapter/driven/aws/sqs-mensageria'
@@ -10,7 +10,7 @@ const videoRouter = Router()
 
 videoRouter.post(
   '/upload', 
-  upload.single('video'), 
+  uploadConfig.single('video'), 
   async (req: Request, res: Response, next: NextFunction) => {
     const videoFile = req.file
     const customerId = req.header('x-customer-id')
