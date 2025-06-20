@@ -1,14 +1,13 @@
 import { VideoFile } from '@core/domain/entities/video-file'
 import { IVideoStorage } from '../ports/video-storage'
-import { getFileSize, getFileType, removeFile } from '@core/application/utils/file-utils'
-import { VideoPresenter } from '@adapter/driver/http/presenters/video-presenter'
-import { InvalidFileException } from '@core/domain/exceptions/file-exceptions'
 import { IMensageria } from '../ports/mensageria'
 import { IVideoMetadataRepository } from '../ports/video-metadata-repository'
+import { VideoPresenter } from '@adapter/driver/http/presenters/video-presenter'
 
 interface UploadVideoUseCaseDto {
-    filePath: string
     originalVideoName: string
+    savedVideoKey: string
+    mimeType: string
     customerId: string
 }
 
@@ -19,51 +18,35 @@ export class UploadVideoUseCase {
         private readonly videoStorage: IVideoStorage,
         private readonly videoMetadataRepository: IVideoMetadataRepository,
         private readonly mensageria: IMensageria,
-    ) {
+    )   {
             this.queueUrl = process.env.UPLOADED_VIDEO_QUEUE_URL ?? ''
         }
 
     async execute(
-        { filePath, originalVideoName, customerId }: UploadVideoUseCaseDto
+        { originalVideoName, savedVideoKey, mimeType, customerId }: UploadVideoUseCaseDto
     ): Promise<VideoPresenter> {
         let file: VideoFile | undefined
-        let videoSaved = false
         let metadataSaved = false
 
         try {
-            const fileSize = getFileSize(filePath)
-            const fileType = getFileType(filePath)
-
-            if (fileSize === 0) {
-                throw new InvalidFileException('File is empty.')
-            }
-
-            file = new VideoFile({
-                originalVideoName,
-                filePath,
-                size: fileSize,
-                type: fileType,
-            })
-
-            await this.videoStorage.saveVideo(file)
-            videoSaved = true
-
+            file = new VideoFile({ originalVideoName, savedVideoKey, mimeType })
+            
             await this.videoMetadataRepository.saveVideo({
                 id: file.getId(),
                 originalVideoName: file.originalVideoName,
-                savedVideoName: file.savedVideoName,
+                savedVideoKey: file.savedVideoKey,
                 customerId,
                 status: file.status
             })
             metadataSaved = true
 
-            console.info(`Video file saved: ${file.savedVideoName}`)
+            console.info(`Video file saved: ${file.savedVideoKey}`)
 
             await this.mensageria.sendMessage(this.queueUrl, {
-                savedVideoName: file.savedVideoName,
+                registerId: file.getId(),
+                savedVideoKey: file.savedVideoKey,
                 originalVideoName: file.originalVideoName,
-                size: file.size,
-                type: file.type,
+                type: file.mimeType,
             })
             
             console.info(`Message sent to SQS queue: ${this.queueUrl}`)
@@ -74,10 +57,8 @@ export class UploadVideoUseCase {
             if (file && metadataSaved) {
                 await this.videoMetadataRepository.deleteVideoById(file.getId())
             }
-            if (file && videoSaved) {
-                await this.videoStorage.deleteVideo(file.savedVideoName)
-            }
-            removeFile(filePath)
+            await this.videoStorage.deleteVideo(savedVideoKey)
+            
             throw error
         }
     }

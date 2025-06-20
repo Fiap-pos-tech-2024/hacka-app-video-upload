@@ -1,56 +1,15 @@
-import fs from 'fs'
-import { 
-    PutObjectCommand, 
-    PutObjectCommandInput, 
-    S3Client, 
-    DeleteObjectCommand 
-} from '@aws-sdk/client-s3'
-import { VideoFile } from '@core/domain/entities/video-file'
+import { DeleteObjectCommand } from '@aws-sdk/client-s3'
+import { BUCKET_NAME, S3_CLIENT } from '@adapter/driven/aws/config/s3-configs'
+
 import { IVideoStorage } from '@core/application/ports/video-storage'
-import { S3UploadException } from '@core/domain/exceptions/s3-exceptions'
 
 export default class S3VideoStorage implements IVideoStorage {
-    private readonly s3: S3Client
-    private readonly bucketName: string
-
-    constructor() {
-        this.s3 = new S3Client({
-            region: process.env.AWS_REGION ?? 'us-east-1',
-            ...(process.env.ENVIRONMENT === 'local'
-                ? { endpoint: process.env.AWS_LOCAL_ENDPOINT, forcePathStyle: true }
-                : {}),
-        })
-        this.bucketName = process.env.AWS_BUCKET_NAME ?? 'default-bucket-name'
-    }
-
-    async saveVideo(video: VideoFile): Promise<void> {
-        try {
-            const videoFileStream = fs.createReadStream(video.filePath)
-
-            const uploadParams: PutObjectCommandInput = {
-                Bucket: this.bucketName,
-                Key: video.savedVideoName,
-                Body: videoFileStream,
-                ContentType: video.type,
-                Tagging: `originalVideoName=${video.originalVideoName}`,
-                Metadata: {
-                    originalVideoName: video.originalVideoName,
-                    type: video.type,
-                    size: video.size.toString(),
-                },
-            }
-
-            await this.s3.send(new PutObjectCommand(uploadParams))
-        } catch (error: unknown) {
-            console.error('S3 video upload failed: ', error)
-            throw new S3UploadException('Video upload failed.')
-        }
-    }
+    private readonly s3 = S3_CLIENT
 
     async deleteVideo(savedVideoName: string): Promise<void> {
         try {
             await this.s3.send(new DeleteObjectCommand({
-                Bucket: this.bucketName,
+                Bucket: BUCKET_NAME,
                 Key: savedVideoName,
             }))
         } catch (error) {

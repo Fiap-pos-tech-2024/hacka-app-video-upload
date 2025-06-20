@@ -3,7 +3,7 @@ import { VideoFilePrismaMapper } from '@adapter/driven/database/mappers/video-fi
 describe('VideoFilePrismaMapper', () => {
   it('deve mapear SaveVideoMetadataDTO para VideoUncheckedCreateInput', () => {
     const dto = {
-      savedVideoName: 'saved.mp4',
+      savedVideoKey: 'saved.mp4',
       originalVideoName: 'original.mp4',
       customerId: 'customer-1',
       status: 'CREATED',

@@ -9,7 +9,8 @@ datasource db {
 
 model Video {
   id                String   @id @default(cuid())
-  savedVideoName    String   @unique @map("saved_video_name")
+  savedVideoKey     String   @unique @map("saved_video_key")
+  savedZipKey       String?  @map("saved_zip_key")
   originalVideoName String   @map("original_video_name")
   customerId        String   @map("customer_id")
   status            String

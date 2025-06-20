@@ -1,7 +1,7 @@
 export interface SaveVideoMetadataDTO {
   id: string
   originalVideoName: string
-  savedVideoName: string
+  savedVideoKey: string
   customerId: string
   status: string
 }

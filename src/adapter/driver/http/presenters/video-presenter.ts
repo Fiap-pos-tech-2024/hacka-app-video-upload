@@ -2,23 +2,20 @@ import { VideoFile } from '@core/domain/entities/video-file'
 
 export class VideoPresenter {
     private readonly originalVideoName: string
-    private readonly savedVideoName: string
-    private readonly size: number
-    private readonly type: string
+    private readonly savedVideoKey: string
+    private readonly mimeType: string
 
-    constructor(originalVideoName: string, savedVideoName: string, size: number, type: string) {
+    constructor(originalVideoName: string, savedVideoKey: string, mimeType: string) {
         this.originalVideoName = originalVideoName
-        this.savedVideoName = savedVideoName
-        this.size = size
-        this.type = type
+        this.savedVideoKey = savedVideoKey
+        this.mimeType = mimeType
     }
 
     static fromDomain(videoFile: VideoFile): VideoPresenter {
         return new VideoPresenter(
             videoFile.originalVideoName,
-            videoFile.savedVideoName,
-            videoFile.size,
-            videoFile.type
+            videoFile.savedVideoKey,
+            videoFile.mimeType
         )
     }
 }

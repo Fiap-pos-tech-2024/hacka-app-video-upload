@@ -16,7 +16,7 @@ describe('PostgresVideoMetadataRepository', () => {
   it('deve salvar vídeo usando o prisma e o mapper', async () => {
     const dto = { foo: 'bar' } as any
     const mapped = {
-      savedVideoName: 'saved.mp4',
+      savedVideoKey: 'saved.mp4',
       originalVideoName: 'original.mp4',
       customerId: 'customer-1',
       status: 'CREATED',
@@ -31,7 +31,7 @@ describe('PostgresVideoMetadataRepository', () => {
   it('deve lançar exceção se prisma.video.create falhar', async () => {
     const dto = { foo: 'bar' } as any
     const mapped = {
-      savedVideoName: 'saved.mp4',
+      savedVideoKey: 'saved.mp4',
       originalVideoName: 'original.mp4',
       customerId: 'customer-1',
       status: 'CREATED',

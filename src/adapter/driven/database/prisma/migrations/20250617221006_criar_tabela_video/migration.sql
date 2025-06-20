@@ -1,7 +1,8 @@
 -- CreateTable
 CREATE TABLE "videos" (
     "id" TEXT NOT NULL,
-    "saved_video_name" TEXT NOT NULL,
+    "saved_video_key" TEXT NOT NULL,
+    "saved_zip_key" TEXT,
     "original_video_name" TEXT NOT NULL,
     "customer_id" TEXT NOT NULL,
     "status" TEXT NOT NULL,
@@ -12,4 +13,4 @@ CREATE TABLE "videos" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "videos_saved_video_name_key" ON "videos"("saved_video_name");
+CREATE UNIQUE INDEX "videos_saved_video_key_key" ON "videos"("saved_video_key");
