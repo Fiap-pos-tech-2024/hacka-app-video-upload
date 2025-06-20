@@ -4,7 +4,7 @@ import { UploadVideoUseCase } from '@core/application/useCases/upload-video-use-
 import S3VideoStorage from '@adapter/driven/aws/s3-video-storage'
 import SqsMensageria from '@adapter/driven/aws/sqs-mensageria'
 import 
-  PostgresVideoMetadataRepository from '@adapter/driven/database/postgres-video-metadata-repository'
+  MySqlVideoMetadataRepository from '@adapter/driven/database/mysql-video-metadata-repository'
 import { PrismaService } from '@adapter/driven/database/prisma/prisma.service'
 
 const videoRouter = Router()
@@ -25,7 +25,7 @@ videoRouter.post(
       
       const uploadVideoUseCase = new UploadVideoUseCase(
         new S3VideoStorage(), 
-        new PostgresVideoMetadataRepository(new PrismaService()), 
+        new MySqlVideoMetadataRepository(new PrismaService()), 
         new SqsMensageria()
       )
 

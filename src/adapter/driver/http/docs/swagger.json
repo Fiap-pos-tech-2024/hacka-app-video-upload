@@ -11,9 +11,9 @@
                 "description": "Faz upload de um arquivo de vídeo e retorna os dados do vídeo salvo.",
                 "parameters": [
                     {
-                        "name": "x-user-email",
+                        "name": "x-customer-id",
                         "in": "header",
-                        "description": "E-mail do usuário que está enviando o vídeo.",
+                        "description": "ID do cliente que está enviando o vídeo.",
                         "required": true,
                         "schema": {
                             "type": "string"

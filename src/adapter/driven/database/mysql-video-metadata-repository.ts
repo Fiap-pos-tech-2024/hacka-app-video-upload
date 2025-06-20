@@ -3,7 +3,7 @@ import { SaveVideoMetadataDTO } from '@core/application/dtos/save-video-metadata
 import { IVideoMetadataRepository } from '@core/application/ports/video-metadata-repository'
 import { VideoFilePrismaMapper } from './mappers/video-file-prisma-mapper'
 
-export default class PostgresVideoMetadataRepository implements IVideoMetadataRepository {
+export default class MySqlVideoMetadataRepository implements IVideoMetadataRepository {
     constructor(private readonly prisma: PrismaService) {}
     
     async saveVideo(dto: SaveVideoMetadataDTO): Promise<void> {

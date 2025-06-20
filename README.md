@@ -28,13 +28,13 @@ Para garantir a qualidade do código, foram implementadas as seguintes práticas
 
 **Testes unitários:**
 
-- <span style="color:green; font-weight:bold">Cobertura TOTAL (**100%**)</span> das linhas, funções e branches do código, validada com Jest.
+- Cobertura TOTAL (**100%**) das linhas, funções e branches do código, validada com Jest.
 - Todos os fluxos, cenários e regras de negócio estão cobertos por testes automatizados.
 
 **Testes de mutação:**
 
 - Utilização do Stryker para garantir a robustez dos testes automatizados.
-- <span style="color:green; font-weight:bold">Todos os mutantes gerados foram eliminados (killed)</span>, assegurando alta confiabilidade do código.
+- Todos os mutantes gerados foram eliminados (killed), assegurando alta confiabilidade do código.
 
    > **O que são testes mutantes?**
    > Testes de mutação consistem em modificar propositalmente pequenos trechos do código (criando "mutantes") para verificar se os testes existentes conseguem detectar esses erros. Se todos os mutantes são "mortos" (ou seja, detectados pelos testes), isso indica que a suíte de testes é realmente eficaz na validação do comportamento do sistema. Utilizar testes mutantes aumenta a confiança na qualidade dos testes e na robustez do código.
@@ -101,7 +101,15 @@ Fluxo principal:
    ```sh
    npm install
    ```
-6. Inicie a aplicação em modo desenvolvimento:
+6. Gere os clientes do Prisma:
+   ```sh
+   npm run generate:prisma
+   ```
+7. Execute as migrations do banco de dados:
+   ```sh
+   npm run migrate
+   ```
+8. Inicie a aplicação em modo desenvolvimento:
    ```sh
    npm run start:dev
    ```

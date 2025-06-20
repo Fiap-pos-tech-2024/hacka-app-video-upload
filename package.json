@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "generate:prisma": "prisma generate",
+    "migrate": "prisma migrate deploy",
     "start:dev": "ts-node-dev --ignore-watch node_modules -r tsconfig-paths/register src/adapter/driver/http/server.ts",
     "lint": "eslint . --ext .ts,.js --fix",
     "test": "jest --detectOpenHandles",
