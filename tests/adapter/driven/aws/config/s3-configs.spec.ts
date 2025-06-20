@@ -28,6 +28,9 @@ describe('s3-configs', () => {
     process.env.AWS_REGION = 'sa-east-1'
     jest.resetModules()
     const { S3_CLIENT } = await import('@adapter/driven/aws/config/s3-configs')
+    
+    const endpoint = S3_CLIENT.config.endpoint
+    expect(endpoint).toBeUndefined()
     expect(S3_CLIENT.constructor.name).toBe('S3Client')
     const region = await S3_CLIENT.config.region()
     expect(region).toBe('sa-east-1')
@@ -47,4 +50,26 @@ describe('s3-configs', () => {
     expect(port).toBe(4566)
     expect(S3_CLIENT.config.forcePathStyle).toBe(true)
   })
+
+  it('deve validar ENVIRONMENT corretamente para "local" e "production"', async () => {
+    process.env.AWS_REGION = 'sa-east-1'
+    process.env.ENVIRONMENT = 'local'
+    process.env.AWS_LOCAL_ENDPOINT = 'http://localhost:4566'
+    jest.resetModules()
+    const { S3_CLIENT } = await import('@adapter/driven/aws/config/s3-configs')
+    const endpointObj = await S3_CLIENT.config.endpoint!()
+    const { protocol, hostname, port } = endpointObj
+
+    expect(protocol).toBe('http:')
+    expect(hostname).toBe('localhost')
+    expect(port).toBe(4566)
+    expect(S3_CLIENT.config.forcePathStyle).toBe(true)
+
+    process.env.ENVIRONMENT = 'production'
+    jest.resetModules()
+    const { S3_CLIENT: prodS3Client } = await import('@adapter/driven/aws/config/s3-configs')
+    const prodEndpointObj = prodS3Client.config.endpoint
+    expect(prodEndpointObj).toBeUndefined()
+    expect(prodS3Client.config.forcePathStyle).toBeFalsy()
+})
 })
