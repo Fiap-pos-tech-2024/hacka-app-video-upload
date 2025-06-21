@@ -9,15 +9,15 @@ interface FindAllVideoUseCaseDto {
 }
 
 export class FindAllVideoUseCase {
-  constructor(private readonly videoMetadataRepository: IVideoMetadataRepository) {}
+    constructor(private readonly videoMetadataRepository: IVideoMetadataRepository) {}
 
-  async execute(dto: FindAllVideoUseCaseDto): Promise<VideoPresenter[]> {
-    const videos = await this.videoMetadataRepository.findAllVideos(dto.query)
+    async execute(dto: FindAllVideoUseCaseDto): Promise<VideoPresenter[]> {
+        const videos = await this.videoMetadataRepository.findAllVideos(dto.query)
 
-    if (!videos) {
-      throw new VideoNotFoundException('Videos not found')
+        if (!videos) {
+            throw new VideoNotFoundException('Videos not found')
+        }
+
+        return videos.map(video => VideoPresenter.fromDomain(video))
     }
-
-    return videos.map(video => VideoPresenter.fromDomain(video))
-  }
 }

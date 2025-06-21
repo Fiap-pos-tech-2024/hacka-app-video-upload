@@ -19,8 +19,8 @@ export class UploadVideoUseCase {
         private readonly videoMetadataRepository: IVideoMetadataRepository,
         private readonly mensageria: IMensageria,
     )   {
-            this.queueUrl = process.env.UPLOADED_VIDEO_QUEUE_URL ?? ''
-        }
+        this.queueUrl = process.env.UPLOADED_VIDEO_QUEUE_URL ?? ''
+    }
 
     async execute(
         { originalVideoName, savedVideoKey, mimeType, customerId }: UploadVideoUseCaseDto

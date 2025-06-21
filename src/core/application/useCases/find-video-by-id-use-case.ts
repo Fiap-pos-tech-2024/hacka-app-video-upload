@@ -7,15 +7,15 @@ interface FindVideoByIdUseCaseDto {
 }
 
 export class FindVideoByIdUseCase {
-  constructor(private readonly videoMetadataRepository: IVideoMetadataRepository) {}
+    constructor(private readonly videoMetadataRepository: IVideoMetadataRepository) {}
 
-  async execute(dto: FindVideoByIdUseCaseDto): Promise<VideoPresenter> {
-    const existingVideo = await this.videoMetadataRepository.findVideoById(dto.id)
+    async execute(dto: FindVideoByIdUseCaseDto): Promise<VideoPresenter> {
+        const existingVideo = await this.videoMetadataRepository.findVideoById(dto.id)
     
-    if (!existingVideo) {
-      throw new VideoNotFoundException('Video not found')
-    }
+        if (!existingVideo) {
+            throw new VideoNotFoundException('Video not found')
+        }
 
-    return VideoPresenter.fromDomain(existingVideo)
-  }
+        return VideoPresenter.fromDomain(existingVideo)
+    }
 }

@@ -18,10 +18,19 @@
   "rules": {
     "quotes": ["error", "single"],
     "semi": ["error", "never"],
-    "@typescript-eslint/no-explicit-any": "warn",
+    "@typescript-eslint/no-explicit-any": ["warn", { "ignoreRestArgs": false }],
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
     "no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
-    "max-len": ["warn", { "code": 103 }]
-  }
+    "max-len": ["warn", { "code": 110 }],
+    "indent": ["error", 4]
+  },
+  "overrides": [
+    {
+      "files": [ "*.spec.ts" ],
+      "rules": {
+        "@typescript-eslint/no-explicit-any": "off"
+      }
+    }
+  ]
 }

@@ -18,85 +18,85 @@ const sqsMensageria = new SqsMensageria()
 
 // Stryker disable all
 videoRouter.post(
-  '/upload', 
-  uploadConfig.single('video'), 
-  async (req: Request, res: Response, next: NextFunction) => {
-    const { originalname, key, mimetype } = req.file as Express.MulterS3.File
-    const customerId = req.header('x-customer-id')
+    '/upload', 
+    uploadConfig.single('video'), 
+    async (req: Request, res: Response, next: NextFunction) => {
+        const { originalname, key, mimetype } = req.file as Express.MulterS3.File
+        const customerId = req.header('x-customer-id')
 
-    try {
-      if (!req.file || !customerId) {
-        res.status(400).json({ statusCode: 400, message: 'Missing requireds fields' })
-        return
-      }
+        try {
+            if (!req.file || !customerId) {
+                res.status(400).json({ statusCode: 400, message: 'Missing requireds fields' })
+                return
+            }
       
-      const uploadVideoUseCase = new UploadVideoUseCase(
-        s3VideoStorage, 
-        mySqlVideoMetadataRepository, 
-        sqsMensageria
-      )
+            const uploadVideoUseCase = new UploadVideoUseCase(
+                s3VideoStorage, 
+                mySqlVideoMetadataRepository, 
+                sqsMensageria
+            )
 
-      const response = await uploadVideoUseCase.execute({
-        originalVideoName: originalname,
-        savedVideoKey: key,
-        mimeType: mimetype,
-        customerId: customerId as string
-      })
+            const response = await uploadVideoUseCase.execute({
+                originalVideoName: originalname,
+                savedVideoKey: key,
+                mimeType: mimetype,
+                customerId: customerId as string
+            })
 
-      res.status(202)
-        .location(`/videos/${response.videoId}`)
-        .json(response)
-    } catch (error) {
-      next(error)
-    }
-})
+            res.status(202)
+                .location(`/videos/${response.videoId}`)
+                .json(response)
+        } catch (error) {
+            next(error)
+        }
+    })
 
 videoRouter.get(
-  '/:id',
-  async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.params
+    '/:id',
+    async (req: Request, res: Response, next: NextFunction) => {
+        const { id } = req.params
 
-    try {
-      const findVideoByIdUseCase = new FindVideoByIdUseCase(mySqlVideoMetadataRepository)
-      const response = await findVideoByIdUseCase.execute({ id })
-      res.status(200).json(response)
-    } catch (error) {
-      next(error)
+        try {
+            const findVideoByIdUseCase = new FindVideoByIdUseCase(mySqlVideoMetadataRepository)
+            const response = await findVideoByIdUseCase.execute({ id })
+            res.status(200).json(response)
+        } catch (error) {
+            next(error)
+        }
     }
-  }
 )
 
 videoRouter.get(
-  '/',
-  async (req: Request, res: Response, next: NextFunction) => {
-    const { customerId } = req.query as { customerId?: string }
+    '/',
+    async (req: Request, res: Response, next: NextFunction) => {
+        const { customerId } = req.query as { customerId?: string }
 
-    try {
-      const findAllVideoUseCase = new FindAllVideoUseCase(mySqlVideoMetadataRepository)
-      const response = await findAllVideoUseCase.execute({ query: { customerId } })
-      res.status(200).json(response)
-    } catch (error) {
-      next(error)
+        try {
+            const findAllVideoUseCase = new FindAllVideoUseCase(mySqlVideoMetadataRepository)
+            const response = await findAllVideoUseCase.execute({ query: { customerId } })
+            res.status(200).json(response)
+        } catch (error) {
+            next(error)
+        }
     }
-  }
 )
 
 videoRouter.patch(
-  '/:id',
-  async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.params
-    const { status, savedZipKey } = req.body
+    '/:id',
+    async (req: Request, res: Response, next: NextFunction) => {
+        const { id } = req.params
+        const { status, savedZipKey } = req.body
     
-    try {
-      const updateVideoMetadataUseCase = new UpdateVideoMetadataUseCase(
-        mySqlVideoMetadataRepository
-      )
-      const response = await updateVideoMetadataUseCase.execute({ id, status, savedZipKey })
-      res.status(200).json(response)
-    } catch (error) {
-      next(error)
+        try {
+            const updateVideoMetadataUseCase = new UpdateVideoMetadataUseCase(
+                mySqlVideoMetadataRepository
+            )
+            const response = await updateVideoMetadataUseCase.execute({ id, status, savedZipKey })
+            res.status(200).json(response)
+        } catch (error) {
+            next(error)
+        }
     }
-  }
 )
 
 export default videoRouter

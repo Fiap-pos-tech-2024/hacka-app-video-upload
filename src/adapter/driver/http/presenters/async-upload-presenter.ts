@@ -5,9 +5,9 @@ export class AsyncUploadPresenter {
     readonly videoId: string
     private readonly message: string
     private constructor(status: string, videoId: string, message: string) {
-      this.status = status
-      this.videoId = videoId
-      this.message = message
+        this.status = status
+        this.videoId = videoId
+        this.message = message
     }
 
     static fromDomain(video: VideoFile) {
@@ -16,5 +16,5 @@ export class AsyncUploadPresenter {
             video.getId(),
             'Upload received and processing will begin shortly.'
         )
-  }
+    }
 }

@@ -5,10 +5,10 @@ export default class SqsMensageria {
 
     constructor() {
         this.client = new SQSClient({
-        region: process.env.AWS_REGION ?? 'us-east-1',
-        ...(process.env.ENVIRONMENT === 'local'
-            ? { endpoint: process.env.AWS_LOCAL_ENDPOINT }
-            : {}),
+            region: process.env.AWS_REGION ?? 'us-east-1',
+            ...(process.env.ENVIRONMENT === 'local'
+                ? { endpoint: process.env.AWS_LOCAL_ENDPOINT }
+                : {}),
         })
     }
 
