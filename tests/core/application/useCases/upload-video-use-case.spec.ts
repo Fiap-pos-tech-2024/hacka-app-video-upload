@@ -1,6 +1,6 @@
 import { UploadVideoUseCase } from '@core/application/useCases/upload-video-use-case'
 import { InvalidFileTypeException } from '@core/domain/exceptions/file-exceptions'
-import { VideoPresenter } from '@adapter/driver/http/presenters/video-presenter'
+import { AsyncUploadPresenter } from '@adapter/driver/http/presenters/async-upload-presenter'
 
 describe('UploadVideoUseCase', () => {
   let videoStorage: { deleteVideo: jest.Mock }
@@ -59,7 +59,7 @@ describe('UploadVideoUseCase', () => {
     expect(spy).toHaveBeenCalledWith(
       'Message sent to SQS queue: https://sqs.us-east-1.amazonaws.com/123456789012/my-queue'
     )
-    expect(result).toBeInstanceOf(VideoPresenter)
+    expect(result).toBeInstanceOf(AsyncUploadPresenter)
     spy.mockRestore()
   })
 
@@ -78,7 +78,7 @@ describe('UploadVideoUseCase', () => {
         type: mimeType,
       })
     )
-    expect(result).toBeInstanceOf(VideoPresenter)
+    expect(result).toBeInstanceOf(AsyncUploadPresenter)
   })
 
   it('deve lançar InvalidFileTypeException se a extensão de arquivo for inválida', async () => {

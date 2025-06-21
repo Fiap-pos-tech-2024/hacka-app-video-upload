@@ -41,7 +41,9 @@ videoRouter.post(
         customerId: customerId as string
       })
 
-      res.status(200).json(response)
+      res.status(202)
+        .location(`/videos/${response.videoId}`)
+        .json(response)
     } catch (error) {
       next(error)
     }

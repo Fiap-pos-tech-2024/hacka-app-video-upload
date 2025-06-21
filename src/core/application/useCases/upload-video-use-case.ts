@@ -2,7 +2,7 @@ import { VideoFile } from '@core/domain/entities/video-file'
 import { IVideoStorage } from '../ports/video-storage'
 import { IMensageria } from '../ports/mensageria'
 import { IVideoMetadataRepository } from '../ports/video-metadata-repository'
-import { VideoPresenter } from '@adapter/driver/http/presenters/video-presenter'
+import { AsyncUploadPresenter } from '@adapter/driver/http/presenters/async-upload-presenter'
 
 interface UploadVideoUseCaseDto {
     originalVideoName: string
@@ -24,7 +24,7 @@ export class UploadVideoUseCase {
 
     async execute(
         { originalVideoName, savedVideoKey, mimeType, customerId }: UploadVideoUseCaseDto
-    ): Promise<VideoPresenter> {
+    ): Promise<AsyncUploadPresenter> {
         let file: VideoFile | undefined
         let metadataSaved = false
 
@@ -51,7 +51,7 @@ export class UploadVideoUseCase {
             
             console.info(`Message sent to SQS queue: ${this.queueUrl}`)
             
-            return VideoPresenter.fromDomain(file)
+            return AsyncUploadPresenter.fromDomain(file)
         } catch (error) {
             // Compensação para garantir atomicidade
             if (file && metadataSaved) {

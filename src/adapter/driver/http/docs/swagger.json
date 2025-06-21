@@ -41,12 +41,21 @@
                     }
                 },
                 "responses": {
-                    "200": {
-                        "description": "Dados do vídeo salvo.",
+                    "202": {
+                        "description": "Upload assíncrono recebido.",
+                        "headers": {
+                            "Location": {
+                                "description": "Rota para consultar o status do vídeo enviado.",
+                                "schema": {
+                                    "type": "string",
+                                    "format": "uri"
+                                }
+                            }
+                        },
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/VideoPresenter"
+                                    "$ref": "#/components/schemas/AsyncUploadPresenter"
                                 }
                             }
                         }
@@ -264,6 +273,24 @@
                     "savedVideoKey",
                     "status"
                 ]
+            },
+            "AsyncUploadPresenter": {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "type": "string",
+                        "description": "Status atual do processamento do vídeo."
+                    },
+                    "videoId": {
+                        "type": "string",
+                        "description": "ID do vídeo."
+                    },
+                    "message": {
+                        "type": "string",
+                        "description": "Mensagem de confirmação do recebimento do upload."
+                    }
+                },
+                "required": ["status", "videoId", "message"]
             },
             "ErrorResponse": {
                 "type": "object",
