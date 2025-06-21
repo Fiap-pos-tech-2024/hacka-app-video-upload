@@ -122,7 +122,92 @@
                 ]
             }
         },
+        "/video": {
+            "get": {
+                "summary": "Lista todos os vídeos",
+                "description": "Retorna uma lista de vídeos, podendo filtrar por customerId.",
+                "parameters": [
+                    {
+                        "name": "customerId",
+                        "in": "query",
+                        "description": "ID do cliente para filtrar os vídeos.",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de vídeos.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": { "$ref": "#/components/schemas/VideoPresenter" }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Nenhum vídeo encontrado.",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                                "examples": {
+                                    "NotFound": {
+                                        "summary": "Nenhum vídeo encontrado",
+                                        "value": { "statusCode": 404, "message": "Videos not found" }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": ["Video"]
+            }
+        },
         "/video/{id}": {
+            "get": {
+                "summary": "Busca vídeo por ID",
+                "description": "Retorna os metadados de um vídeo pelo seu ID.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID do vídeo a ser consultado.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Metadados do vídeo.",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/VideoPresenter" }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Vídeo não encontrado.",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                                "examples": {
+                                    "NotFound": {
+                                        "summary": "Vídeo não encontrado",
+                                        "value": { "statusCode": 404, "message": "Video not found" }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": ["Video"]
+            },
             "patch": {
                 "summary": "Atualiza metadados do vídeo",
                 "description": "Atualiza o status e/ou chave do zip de um vídeo existente.",

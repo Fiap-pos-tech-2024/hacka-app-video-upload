@@ -7,4 +7,5 @@ export interface IVideoMetadataRepository  {
     deleteVideoById(id: string): Promise<void>;
     updateVideo(dto: UpdateVideoMetadataDTO): Promise<VideoFile>;
     findVideoById(id: string): Promise<VideoFile | null>;
+    findAllVideos(query: { customerId?: string }): Promise<VideoFile[]>;
 }

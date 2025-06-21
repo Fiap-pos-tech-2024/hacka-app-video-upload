@@ -40,4 +40,18 @@ export default class MySqlVideoMetadataRepository implements IVideoMetadataRepos
         if (!video) return null
         return VideoFilePrismaMapper.toDomain(video)
     }
+
+    async findAllVideos(query: { customerId?: string }): Promise<VideoFile[]> {
+        const { customerId } = query
+
+        const videos = await this.prisma.video.findMany()
+
+        if (videos && customerId) {
+            return videos
+                .filter((video) => video.customerId === customerId)
+                .map((video) => VideoFilePrismaMapper.toDomain(video))
+        }
+
+        return videos.map((video) => VideoFilePrismaMapper.toDomain(video))
+    }
 }

@@ -8,6 +8,7 @@ describe('MySqlVideoMetadataRepository', () => {
       delete: jest.fn(),
       update: jest.fn(),
       findUnique: jest.fn(),
+      findMany: jest.fn(),
     },
   }
 
@@ -125,5 +126,52 @@ describe('MySqlVideoMetadataRepository', () => {
     const repo = new MySqlVideoMetadataRepository(prismaMock as any)
     const result = await repo.findVideoById('id-nao-existe')
     expect(result).toBeNull()
+  })
+
+  it('deve buscar todos os vídeos', async () => {
+    const videos = [
+      {
+        id: 'id-1',
+        savedVideoKey: 'saved1.mp4',
+        savedZipKey: 'saved1.zip',
+        originalVideoName: 'original1.mp4',
+        customerId: 'customer-1',
+        status: 'CREATED',
+        createdAt: new Date('2024-01-01T00:00:00Z'),
+        updatedAt: new Date('2024-01-02T00:00:00Z'),
+      },
+      {
+        id: 'id-2',
+        savedVideoKey: 'saved2.mp4',
+        savedZipKey: 'saved2.zip',
+        originalVideoName: 'original2.mp4',
+        customerId: 'customer-2',
+        status: 'DONE',
+        createdAt: new Date('2024-02-01T00:00:00Z'),
+        updatedAt: new Date('2024-02-02T00:00:00Z'),
+      },
+    ]
+    prismaMock.video.findMany = jest.fn().mockResolvedValue(videos)
+    jest.spyOn(VideoFilePrismaMapper, 'toDomain').mockImplementation((v) => v as any)
+    const repo = new MySqlVideoMetadataRepository(prismaMock as any)
+    const result = await repo.findAllVideos({})
+    expect(prismaMock.video.findMany).toHaveBeenCalled()
+    expect(result).toEqual(videos)
+  })
+
+  it('deve buscar todos os vídeos filtrando por customerId', async () => {
+    const videos = [
+      { id: 'id-1', customerId: 'customer-1' },
+      { id: 'id-2', customerId: 'customer-2' },
+      { id: 'id-3', customerId: 'customer-1' },
+    ]
+    prismaMock.video.findMany = jest.fn().mockResolvedValue(videos)
+    jest.spyOn(VideoFilePrismaMapper, 'toDomain').mockImplementation((v) => v as any)
+    const repo = new MySqlVideoMetadataRepository(prismaMock as any)
+    const result = await repo.findAllVideos({ customerId: 'customer-1' })
+    expect(result).toEqual([
+      { id: 'id-1', customerId: 'customer-1' },
+      { id: 'id-3', customerId: 'customer-1' },
+    ])
   })
 })

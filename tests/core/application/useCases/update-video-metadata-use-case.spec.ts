@@ -8,12 +8,14 @@ import { VideoPresenter } from '@adapter/driver/http/presenters/video-presenter'
 describe('UpdateVideoMetadataUseCase', () => {
 
   const repoMock: { 
-    saveVideo: jest.Mock; deleteVideoById: jest.Mock; findVideoById: jest.Mock; updateVideo: jest.Mock
+    saveVideo: jest.Mock; deleteVideoById: jest.Mock; findVideoById: jest.Mock; 
+    updateVideo: jest.Mock; findAllVideos: jest.Mock
   } = {
     saveVideo: jest.fn(),
     deleteVideoById: jest.fn(),
     findVideoById: jest.fn(),
     updateVideo: jest.fn(),
+    findAllVideos: jest.fn()
   }
 
   const useCase = new UpdateVideoMetadataUseCase(repoMock)

@@ -6,6 +6,8 @@ import SqsMensageria from '@adapter/driven/aws/sqs-mensageria'
 import MySqlVideoMetadataRepository from '@adapter/driven/database/mysql-video-metadata-repository'
 import { PrismaService } from '@adapter/driven/database/prisma/prisma.service'
 import { UpdateVideoMetadataUseCase } from '@core/application/useCases/update-video-metadata-use-case'
+import { FindVideoByIdUseCase } from '@core/application/useCases/find-video-by-id-use-case'
+import { FindAllVideoUseCase } from '@core/application/useCases/find-all-video-use-case'
 
 const videoRouter = Router()
 
@@ -48,6 +50,36 @@ videoRouter.post(
       next(error)
     }
 })
+
+videoRouter.get(
+  '/:id',
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params
+
+    try {
+      const findVideoByIdUseCase = new FindVideoByIdUseCase(mySqlVideoMetadataRepository)
+      const response = await findVideoByIdUseCase.execute({ id })
+      res.status(200).json(response)
+    } catch (error) {
+      next(error)
+    }
+  }
+)
+
+videoRouter.get(
+  '/',
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { customerId } = req.query as { customerId?: string }
+
+    try {
+      const findAllVideoUseCase = new FindAllVideoUseCase(mySqlVideoMetadataRepository)
+      const response = await findAllVideoUseCase.execute({ query: { customerId } })
+      res.status(200).json(response)
+    } catch (error) {
+      next(error)
+    }
+  }
+)
 
 videoRouter.patch(
   '/:id',
