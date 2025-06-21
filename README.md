@@ -5,8 +5,6 @@ Este projeto permite o upload de arquivos (somente vídeos) com tamanho máximo 
 
 Foi aplicada uma estratégia de cache para otimizar o desempenho das consultas.
 
-O processamento posterior é feito de forma assíncrona, através de outro microsserviço que irá gerar imagens do vídeo e compilar um arquivo zip com as imagens geradas.
-
 ## Arquitetura do Projeto
 
 Este projeto segue a arquitetura hexagonal (Ports and Adapters), promovendo separação de responsabilidades e facilidade de manutenção. Abaixo está a estrutura principal de pastas e suas responsabilidades:
