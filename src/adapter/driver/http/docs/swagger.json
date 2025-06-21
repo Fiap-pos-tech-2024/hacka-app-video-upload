@@ -112,6 +112,106 @@
                     "Video"
                 ]
             }
+        },
+        "/video/{id}": {
+            "patch": {
+                "summary": "Atualiza metadados do vídeo",
+                "description": "Atualiza o status e/ou chave do zip de um vídeo existente.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID do vídeo a ser atualizado.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "status": {
+                                        "type": "string",
+                                        "description": "Novo status do vídeo."
+                                    },
+                                    "savedZipKey": {
+                                        "type": "string",
+                                        "description": "Chave do arquivo zip salvo.",
+                                        "nullable": true
+                                    }
+                                },
+                                "required": ["status"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Metadados do vídeo atualizados.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/VideoPresenter"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Requisição inválida.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "examples": {
+                                    "MissingStatus": {
+                                        "summary": "Status ausente",
+                                        "value": { "statusCode": 400, "message": "Missing video status" }
+                                    },
+                                    "InvalidStatus": {
+                                        "summary": "Status inválido",
+                                        "value": { "statusCode": 400, "message": "Invalid video status value" }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Vídeo não encontrado.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "examples": {
+                                    "NotFound": {
+                                        "summary": "Vídeo não encontrado",
+                                        "value": { "statusCode": 404, "message": "Video not found" }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno do servidor.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Video"
+                ]
+            }
         }
     },
     "components": {
@@ -119,28 +219,50 @@
             "VideoPresenter": {
                 "type": "object",
                 "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "ID do vídeo."
+                    },
                     "originalVideoName": {
                         "type": "string",
                         "description": "Nome original do arquivo enviado."
                     },
-                    "savedVideoName": {
+                    "savedVideoKey": {
                         "type": "string",
-                        "description": "Nome salvo no armazenamento."
+                        "description": "Chave do arquivo salvo no armazenamento."
                     },
-                    "size": {
-                        "type": "integer",
-                        "description": "Tamanho do arquivo em bytes."
-                    },
-                    "type": {
+                    "status": {
                         "type": "string",
-                        "description": "Tipo MIME do arquivo."
+                        "description": "Status atual do processamento do vídeo."
+                    },
+                    "customerId": {
+                        "type": "string",
+                        "description": "ID do cliente.",
+                        "nullable": true
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Data de criação.",
+                        "nullable": true
+                    },
+                    "updatedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Data de atualização.",
+                        "nullable": true
+                    },
+                    "savedZipKey": {
+                        "type": "string",
+                        "description": "Chave do arquivo zip salvo.",
+                        "nullable": true
                     }
                 },
                 "required": [
+                    "id",
                     "originalVideoName",
-                    "savedVideoName",
-                    "size",
-                    "type"
+                    "savedVideoKey",
+                    "status"
                 ]
             },
             "ErrorResponse": {

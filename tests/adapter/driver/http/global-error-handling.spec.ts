@@ -69,4 +69,18 @@ describe('globalErrorHandler', () => {
     expect(res.status).toHaveBeenCalledWith(500)
     expect(res.json).toHaveBeenCalledWith({ statusCode: 500, message: 'Erro desconhecido' })
   })
+
+  it('deve tratar InvalidVideoStatusException', () => {
+    const err = { name: 'InvalidVideoStatusException', message: 'Status inválido' }
+    globalErrorHandler(err as any, {} as any, res, jest.fn())
+    expect(res.status).toHaveBeenCalledWith(400)
+    expect(res.json).toHaveBeenCalledWith({ statusCode: 400, message: 'Status inválido' })
+  })
+
+  it('deve tratar VideoNotFoundException', () => {
+    const err = { name: 'VideoNotFoundException', message: 'Não encontrado' }
+    globalErrorHandler(err as any, {} as any, res, jest.fn())
+    expect(res.status).toHaveBeenCalledWith(404)
+    expect(res.json).toHaveBeenCalledWith({ statusCode: 404, message: 'Não encontrado' })
+  })
 })

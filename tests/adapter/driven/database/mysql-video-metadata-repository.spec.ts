@@ -6,6 +6,8 @@ describe('MySqlVideoMetadataRepository', () => {
     video: {
       create: jest.fn(),
       delete: jest.fn(),
+      update: jest.fn(),
+      findUnique: jest.fn(),
     },
   }
 
@@ -52,5 +54,76 @@ describe('MySqlVideoMetadataRepository', () => {
     prismaMock.video.delete.mockRejectedValue(new Error('erro delete'))
     const repo = new MySqlVideoMetadataRepository(prismaMock as any)
     await expect(repo.deleteVideoById('id-123')).rejects.toThrow('erro delete')
+  })
+
+  it('deve atualizar vídeo pelo id', async () => {
+    const updated = {
+      id: 'id-1',
+      savedVideoKey: 'saved.mp4',
+      savedZipKey: 'saved.zip',
+      originalVideoName: 'original.mp4',
+      customerId: 'customer-1',
+      status: 'DONE',
+      createdAt: new Date('2024-01-01T00:00:00Z'),
+      updatedAt: new Date('2024-01-02T00:00:00Z'),
+    }
+    prismaMock.video.update = jest.fn().mockResolvedValue(updated)
+    jest.spyOn(VideoFilePrismaMapper, 'toDomain').mockReturnValue(updated as any)
+    const repo = new MySqlVideoMetadataRepository(prismaMock as any)
+    const result = await repo.updateVideo({ id: 'id-1', status: 'DONE', savedZipKey: 'saved.zip' })
+    expect(prismaMock.video.update).toHaveBeenCalledWith({ 
+      where: { id: 'id-1' }, 
+      data: { status: 'DONE', savedZipKey: 'saved.zip' } })
+    expect(VideoFilePrismaMapper.toDomain).toHaveBeenCalledWith(updated)
+    expect(result).toBe(updated)
+  })
+
+  it('deve atualizar vídeo pelo id sem savedZipKey', async () => {
+    const updated = {
+      id: 'id-3',
+      savedVideoKey: 'saved3.mp4',
+      savedZipKey: undefined,
+      originalVideoName: 'original3.mp4',
+      customerId: 'customer-3',
+      status: 'PROCESSING',
+      createdAt: new Date('2024-03-01T00:00:00Z'),
+      updatedAt: new Date('2024-03-02T00:00:00Z'),
+    }
+    prismaMock.video.update = jest.fn().mockResolvedValue(updated)
+    jest.spyOn(VideoFilePrismaMapper, 'toDomain').mockReturnValue(updated as any)
+    const repo = new MySqlVideoMetadataRepository(prismaMock as any)
+    const result = await repo.updateVideo({ id: 'id-3', status: 'PROCESSING' })
+    expect(prismaMock.video.update).toHaveBeenCalledWith({ 
+      where: { id: 'id-3' }, 
+      data: { status: 'PROCESSING' } })
+    expect(VideoFilePrismaMapper.toDomain).toHaveBeenCalledWith(updated)
+    expect(result).toBe(updated)
+  })
+
+  it('deve buscar vídeo por id', async () => {
+    const found = {
+      id: 'id-2',
+      savedVideoKey: 'saved2.mp4',
+      savedZipKey: 'saved2.zip',
+      originalVideoName: 'original2.mp4',
+      customerId: 'customer-2',
+      status: 'CREATED',
+      createdAt: new Date('2024-02-01T00:00:00Z'),
+      updatedAt: new Date('2024-02-02T00:00:00Z'),
+    }
+    prismaMock.video.findUnique = jest.fn().mockResolvedValue(found)
+    jest.spyOn(VideoFilePrismaMapper, 'toDomain').mockReturnValue(found as any)
+    const repo = new MySqlVideoMetadataRepository(prismaMock as any)
+    const result = await repo.findVideoById('id-2')
+    expect(prismaMock.video.findUnique).toHaveBeenCalledWith({ where: { id: 'id-2' } })
+    expect(VideoFilePrismaMapper.toDomain).toHaveBeenCalledWith(found)
+    expect(result).toBe(found)
+  })
+
+  it('deve retornar null se vídeo não encontrado ao buscar por id', async () => {
+    prismaMock.video.findUnique = jest.fn().mockResolvedValue(null)
+    const repo = new MySqlVideoMetadataRepository(prismaMock as any)
+    const result = await repo.findVideoById('id-nao-existe')
+    expect(result).toBeNull()
   })
 })

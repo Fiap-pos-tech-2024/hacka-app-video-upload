@@ -32,7 +32,11 @@ const globalErrorHandler = (
       break
     case 'InvalidFileTypeException':
     case 'InvalidFileException':
+    case 'InvalidVideoStatusException':
       res.status(400).json({ statusCode: 400, message: err.message })
+      break
+    case 'VideoNotFoundException':
+      res.status(404).json({ statusCode: 404, message: err.message })
       break
     case 'FileSizeExceededException':
       res.status(413).json({ statusCode: 413, message: err.message })

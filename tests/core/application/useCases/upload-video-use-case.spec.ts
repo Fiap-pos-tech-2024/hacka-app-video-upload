@@ -4,7 +4,9 @@ import { VideoPresenter } from '@adapter/driver/http/presenters/video-presenter'
 
 describe('UploadVideoUseCase', () => {
   let videoStorage: { deleteVideo: jest.Mock }
-  let videoMetadataRepository: { saveVideo: jest.Mock; deleteVideoById: jest.Mock }
+  let videoMetadataRepository: { 
+    saveVideo: jest.Mock; deleteVideoById: jest.Mock; findVideoById: jest.Mock; updateVideo: jest.Mock
+  }
   let mensageria: { sendMessage: jest.Mock }
   let useCase: UploadVideoUseCase
 
@@ -20,6 +22,8 @@ describe('UploadVideoUseCase', () => {
     videoMetadataRepository = {
       saveVideo: jest.fn(),
       deleteVideoById: jest.fn(),
+      updateVideo: jest.fn(),
+      findVideoById: jest.fn()
     }
     mensageria = {
       sendMessage: jest.fn(),

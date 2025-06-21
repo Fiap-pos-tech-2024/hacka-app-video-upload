@@ -3,9 +3,9 @@ import { uploadConfig } from '../config/multer-config'
 import { UploadVideoUseCase } from '@core/application/useCases/upload-video-use-case'
 import S3VideoStorage from '@adapter/driven/aws/s3-video-storage'
 import SqsMensageria from '@adapter/driven/aws/sqs-mensageria'
-import 
-  MySqlVideoMetadataRepository from '@adapter/driven/database/mysql-video-metadata-repository'
+import MySqlVideoMetadataRepository from '@adapter/driven/database/mysql-video-metadata-repository'
 import { PrismaService } from '@adapter/driven/database/prisma/prisma.service'
+import { UpdateVideoMetadataUseCase } from '@core/application/useCases/update-video-metadata-use-case'
 
 const videoRouter = Router()
 
@@ -41,5 +41,23 @@ videoRouter.post(
       next(error)
     }
 })
+
+videoRouter.patch(
+  '/:id',
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params
+    const { status, savedZipKey } = req.body
+    
+    try {
+      const updateVideoMetadataUseCase = new UpdateVideoMetadataUseCase(
+        new MySqlVideoMetadataRepository(new PrismaService())
+      )
+      const response = await updateVideoMetadataUseCase.execute({ id, status, savedZipKey })
+      res.status(200).json(response)
+    } catch (error) {
+      next(error)
+    }
+  }
+)
 
 export default videoRouter
