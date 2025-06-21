@@ -1,5 +1,6 @@
-import tsConfig from './tsconfig.json'
-import tsConfigPaths from 'tsconfig-paths'
+/* eslint-disable @typescript-eslint/no-require-imports */
+const tsConfig = require('./tsconfig.json')
+const tsConfigPaths = require('tsconfig-paths')
 
 const baseUrl = './dist'
 tsConfigPaths.register({

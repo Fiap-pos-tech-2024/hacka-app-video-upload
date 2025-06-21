@@ -52,6 +52,23 @@ create-env-file:
 	UPLOADED_VIDEO_QUEUE_URL=$$(aws --endpoint-url=http://localhost:4566 sqs get-queue-url --queue-name uploaded-video-queue --output text --query 'QueueUrl'); \
 	echo "UPLOADED_VIDEO_QUEUE_URL=$$UPLOADED_VIDEO_QUEUE_URL" >> .env
 
+create-env-file-docker:
+	echo "AWS_ACCESS_KEY_ID=localstack" > .env
+	echo "AWS_SECRET_ACCESS_KEY=localstack" >> .env
+	echo "MYSQL_URL=mysql://root:$(MYSQL_PASSWORD)@db-mysql:3306/$(MYSQL_DB)" >> .env
+	echo "AWS_REGION=us-east-1" >> .env
+	echo "AWS_LOCAL_ENDPOINT=http://localstack:4566" >> .env
+	echo "ENVIRONMENT=local" >> .env
+	echo "AWS_BUCKET_NAME=$(BUCKET_NAME)" >> .env
+	echo "REDIS_HOST=db-redis" >> .env
+	echo "REDIS_PORT=$(REDIS_PORT)" >> .env
+	echo "UPLOADED_VIDEO_QUEUE_URL=http://localstack:4566/000000000000/uploaded-video-queue" >> .env
+	echo "PORT=3001" >> .env
+	echo "MYSQL_ROOT_PASSWORD=$(MYSQL_PASSWORD)" >> .env
+	echo "MYSQL_DATABASE=$(MYSQL_DB)" >> .env
+	echo "MYSQL_USER=$(MYSQL_USER)" >> .env
+	echo "MYSQL_PASSWORD=$(MYSQL_PASSWORD)" >> .env
+
 down:
 	docker stop $(LOCALSTACK_CONTAINER_NAME)
 	docker stop $(MYSQL_CONTAINER_NAME)

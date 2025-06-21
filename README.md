@@ -96,15 +96,34 @@ npm run migrate
 npm run start:dev
 ```
 
-### 🌐 Acessando a API
+### 🚀 Execução com Docker Compose
 
-A aplicação possui documentação interativa e permite testar os endpoints diretamente pelo Swagger UI. [http://localhost:3001/docs](http://localhost:3001/docs)
+```bash
+# 1. Gere o arquivo .env adequado para docker-compose
+make create-env-file-docker
 
+# 2. Suba todos os serviços (app, mysql, redis, localstack)
+docker-compose up --build
+
+# 3. Crie o bucket S3
+make create-s3
+
+# 4. Crie a fila SQS
+make create-queue
+```
+
+A aplicação estará disponível em 🌐 [http://localhost:3001/docs](http://localhost:3001/docs)
 
 ### 🛑 Parando os serviços
 ```bash
 # Irá parar todos os containers do Docker
 make down
+```
+
+### 🛑 Parando os serviços Docker Compose
+```bash
+# Para todos os containers do Docker Compose
+docker-compose down
 ```
 
 ## Tecnologias Utilizadas

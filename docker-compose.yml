@@ -1,0 +1,64 @@
+services:
+  app:
+    build: .
+    container_name: video-app
+    environment:
+      - PORT=${PORT}
+      - MYSQL_URL=${MYSQL_URL}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION}
+      - AWS_LOCAL_ENDPOINT=${AWS_LOCAL_ENDPOINT}
+      - AWS_BUCKET_NAME=${AWS_BUCKET_NAME}
+      - ENVIRONMENT=${ENVIRONMENT}
+      - UPLOADED_VIDEO_QUEUE_URL=${UPLOADED_VIDEO_QUEUE_URL}
+    ports:
+      - "${PORT}:${PORT}"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      localstack:
+        condition: service_started
+
+  mysql:
+    image: mysql:latest
+    container_name: db-mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+
+  redis:
+    image: redis:7
+    container_name: db-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  localstack:
+    image: localstack/localstack:latest
+    container_name: localstack
+    environment:
+      - DEBUG=1
+      - PERSISTENCE=0
+    ports:
+      - "4566:4566"
+      - "4510-4559:4510-4559"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
