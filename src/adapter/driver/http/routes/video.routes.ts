@@ -9,6 +9,11 @@ import { UpdateVideoMetadataUseCase } from '@core/application/useCases/update-vi
 
 const videoRouter = Router()
 
+const prismaService = new PrismaService()
+const mySqlVideoMetadataRepository = new MySqlVideoMetadataRepository(prismaService)
+const s3VideoStorage = new S3VideoStorage()
+const sqsMensageria = new SqsMensageria()
+
 // Stryker disable all
 videoRouter.post(
   '/upload', 
@@ -24,9 +29,9 @@ videoRouter.post(
       }
       
       const uploadVideoUseCase = new UploadVideoUseCase(
-        new S3VideoStorage(), 
-        new MySqlVideoMetadataRepository(new PrismaService()), 
-        new SqsMensageria()
+        s3VideoStorage, 
+        mySqlVideoMetadataRepository, 
+        sqsMensageria
       )
 
       const response = await uploadVideoUseCase.execute({
@@ -50,7 +55,7 @@ videoRouter.patch(
     
     try {
       const updateVideoMetadataUseCase = new UpdateVideoMetadataUseCase(
-        new MySqlVideoMetadataRepository(new PrismaService())
+        mySqlVideoMetadataRepository
       )
       const response = await updateVideoMetadataUseCase.execute({ id, status, savedZipKey })
       res.status(200).json(response)
