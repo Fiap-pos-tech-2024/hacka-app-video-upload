@@ -8,6 +8,7 @@ import { PrismaService } from '@adapter/driven/database/prisma/prisma.service'
 import { UpdateVideoMetadataUseCase } from '@core/application/useCases/update-video-metadata-use-case'
 import { FindVideoByIdUseCase } from '@core/application/useCases/find-video-by-id-use-case'
 import { FindAllVideoUseCase } from '@core/application/useCases/find-all-video-use-case'
+import { RedisCache } from '@adapter/driven/cache/redis-cache'
 
 const videoRouter = Router()
 
@@ -15,6 +16,7 @@ const prismaService = new PrismaService()
 const mySqlVideoMetadataRepository = new MySqlVideoMetadataRepository(prismaService)
 const s3VideoStorage = new S3VideoStorage()
 const sqsMensageria = new SqsMensageria()
+const cache = new RedisCache()
 
 // Stryker disable all
 videoRouter.post(
@@ -33,7 +35,8 @@ videoRouter.post(
             const uploadVideoUseCase = new UploadVideoUseCase(
                 s3VideoStorage, 
                 mySqlVideoMetadataRepository, 
-                sqsMensageria
+                sqsMensageria,
+                cache
             )
 
             const response = await uploadVideoUseCase.execute({
@@ -57,7 +60,7 @@ videoRouter.get(
         const { id } = req.params
 
         try {
-            const findVideoByIdUseCase = new FindVideoByIdUseCase(mySqlVideoMetadataRepository)
+            const findVideoByIdUseCase = new FindVideoByIdUseCase(mySqlVideoMetadataRepository, cache)
             const response = await findVideoByIdUseCase.execute({ id })
             res.status(200).json(response)
         } catch (error) {
@@ -72,7 +75,7 @@ videoRouter.get(
         const { customerId } = req.query as { customerId?: string }
 
         try {
-            const findAllVideoUseCase = new FindAllVideoUseCase(mySqlVideoMetadataRepository)
+            const findAllVideoUseCase = new FindAllVideoUseCase(mySqlVideoMetadataRepository, cache)
             const response = await findAllVideoUseCase.execute({ query: { customerId } })
             res.status(200).json(response)
         } catch (error) {
@@ -89,7 +92,8 @@ videoRouter.patch(
     
         try {
             const updateVideoMetadataUseCase = new UpdateVideoMetadataUseCase(
-                mySqlVideoMetadataRepository
+                mySqlVideoMetadataRepository,
+                cache
             )
             const response = await updateVideoMetadataUseCase.execute({ id, status, savedZipKey })
             res.status(200).json(response)

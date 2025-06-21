@@ -6,6 +6,8 @@ MYSQL_CONTAINER_NAME=techchallenge-mysql
 MYSQL_USER=user
 MYSQL_PASSWORD=pass
 MYSQL_DB=poc
+REDIS_CONTAINER_NAME=upload-redis
+REDIS_PORT=6379
 
 
 up:
@@ -26,6 +28,11 @@ up:
 		-e MYSQL_PASSWORD=$(MYSQL_PASSWORD) 			\
 		mysql:latest
 
+	docker run --rm -d \
+		-p $(REDIS_PORT):6379 \
+		--name $(REDIS_CONTAINER_NAME) \
+		redis:7
+
 create-s3:
 	aws --endpoint-url=http://localhost:4566 s3api create-bucket --bucket $(BUCKET_NAME)
 
@@ -40,9 +47,12 @@ create-env-file:
 	echo "AWS_LOCAL_ENDPOINT=http://localhost:4566" >> .env
 	echo "ENVIRONMENT=local" >> .env
 	echo "AWS_BUCKET_NAME=$(BUCKET_NAME)" >> .env
+	echo "REDIS_HOST=localhost" >> .env
+	echo "REDIS_PORT=$(REDIS_PORT)" >> .env
 	UPLOADED_VIDEO_QUEUE_URL=$$(aws --endpoint-url=http://localhost:4566 sqs get-queue-url --queue-name uploaded-video-queue --output text --query 'QueueUrl'); \
 	echo "UPLOADED_VIDEO_QUEUE_URL=$$UPLOADED_VIDEO_QUEUE_URL" >> .env
 
 down:
 	docker stop $(LOCALSTACK_CONTAINER_NAME)
 	docker stop $(MYSQL_CONTAINER_NAME)
+	docker stop $(REDIS_CONTAINER_NAME)

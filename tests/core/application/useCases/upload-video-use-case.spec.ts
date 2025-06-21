@@ -9,6 +9,7 @@ describe('UploadVideoUseCase', () => {
     updateVideo: jest.Mock; findAllVideos: jest.Mock
   }
     let mensageria: { sendMessage: jest.Mock }
+    let cacheMock: { del: jest.Mock }
     let useCase: UploadVideoUseCase
 
     const originalVideoName = 'video.mp4'
@@ -30,10 +31,13 @@ describe('UploadVideoUseCase', () => {
         mensageria = {
             sendMessage: jest.fn(),
         }
+        cacheMock = {
+            del: jest.fn(),
+        }
 
         process.env.UPLOADED_VIDEO_QUEUE_URL = 'https://sqs.us-east-1.amazonaws.com/123456789012/my-queue'
 
-        useCase = new UploadVideoUseCase(videoStorage, videoMetadataRepository, mensageria)
+        useCase = new UploadVideoUseCase(videoStorage, videoMetadataRepository, mensageria, cacheMock as any)
         jest.clearAllMocks()
     })
 
@@ -62,12 +66,13 @@ describe('UploadVideoUseCase', () => {
             'Message sent to SQS queue: https://sqs.us-east-1.amazonaws.com/123456789012/my-queue'
         )
         expect(result).toBeInstanceOf(AsyncUploadPresenter)
+        expect(cacheMock.del).toHaveBeenCalledWith(`videos:customer:${customerId}`)
         spy.mockRestore()
     })
 
     it('deve salvar metadados e enviar mensagem com sucesso sem fila SQS', async () => {
         delete process.env.UPLOADED_VIDEO_QUEUE_URL
-        useCase = new UploadVideoUseCase(videoStorage, videoMetadataRepository, mensageria)
+        useCase = new UploadVideoUseCase(videoStorage, videoMetadataRepository, mensageria, cacheMock as any)
         const result = await useCase.execute({ originalVideoName, savedVideoKey, mimeType, customerId })
 
         expect(videoMetadataRepository.saveVideo).toHaveBeenCalled()
@@ -81,6 +86,7 @@ describe('UploadVideoUseCase', () => {
             })
         )
         expect(result).toBeInstanceOf(AsyncUploadPresenter)
+        expect(cacheMock.del).toHaveBeenCalledWith(`videos:customer:${customerId}`)
     })
 
     it('deve lançar InvalidFileTypeException se a extensão de arquivo for inválida', async () => {

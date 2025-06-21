@@ -18,7 +18,11 @@ describe('UpdateVideoMetadataUseCase', () => {
       findAllVideos: jest.fn()
   }
 
-    const useCase = new UpdateVideoMetadataUseCase(repoMock)
+    const cacheMock = {
+        del: jest.fn()
+    }
+
+    const useCase = new UpdateVideoMetadataUseCase(repoMock as any, cacheMock as any)
 
     beforeEach(() => {
         jest.clearAllMocks()
@@ -26,7 +30,7 @@ describe('UpdateVideoMetadataUseCase', () => {
 
     it('deve atualizar metadados do vídeo com sucesso', async () => {
         const dto = { id: 'id-1', status: VideoFileStatus.FINISHED, savedZipKey: 'zipkey.zip' }
-        const videoDomain = { id: 'id-1' }
+        const videoDomain = { id: 'id-1', customerId: 'customer-1' }
         repoMock.findVideoById.mockResolvedValue(videoDomain)
         repoMock.updateVideo.mockResolvedValue(videoDomain)
         jest.spyOn(VideoPresenter, 'fromDomain').mockReturnValue('presenter' as any)
@@ -34,6 +38,8 @@ describe('UpdateVideoMetadataUseCase', () => {
         expect(repoMock.findVideoById).toHaveBeenCalledWith('id-1')
         expect(repoMock.updateVideo).toHaveBeenCalledWith(dto)
         expect(VideoPresenter.fromDomain).toHaveBeenCalledWith(videoDomain)
+        expect(cacheMock.del).toHaveBeenCalledWith('video:id-1')
+        expect(cacheMock.del).toHaveBeenCalledWith('videos:customer:customer-1')
         expect(result).toBe('presenter')
     })
 

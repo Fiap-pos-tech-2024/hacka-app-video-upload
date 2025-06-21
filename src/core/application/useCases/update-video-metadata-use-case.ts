@@ -4,6 +4,7 @@ import { VideoPresenter } from '@adapter/driver/http/presenters/video-presenter'
 import { 
     InvalidVideoStatusException, VideoNotFoundException 
 } from '@core/domain/exceptions/video-exceptions'
+import { ICache } from '../ports/cache'
 
 interface UpdateVideoMetadataUseCaseDto {
   id: string;
@@ -12,7 +13,10 @@ interface UpdateVideoMetadataUseCaseDto {
 }
 
 export class UpdateVideoMetadataUseCase {
-    constructor(private readonly videoMetadataRepository: IVideoMetadataRepository) {}
+    constructor(
+        private readonly videoMetadataRepository: IVideoMetadataRepository,
+        private readonly cache: ICache
+    ) {}
 
     async execute(dto: UpdateVideoMetadataUseCaseDto): Promise<VideoPresenter> {
         if (!dto.status) {
@@ -29,6 +33,10 @@ export class UpdateVideoMetadataUseCase {
         }
 
         const updatedVideoMetadata = await this.videoMetadataRepository.updateVideo(dto)
+
+        // Invalida o cache do vídeo e da lista do cliente
+        await this.cache.del(`video:${dto.id}`)       
+        await this.cache.del(`videos:customer:${existingVideo.customerId}`)
 
         return VideoPresenter.fromDomain(updatedVideoMetadata)
     }

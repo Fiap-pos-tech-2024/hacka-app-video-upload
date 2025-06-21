@@ -3,6 +3,7 @@ import { IVideoStorage } from '../ports/video-storage'
 import { IMensageria } from '../ports/mensageria'
 import { IVideoMetadataRepository } from '../ports/video-metadata-repository'
 import { AsyncUploadPresenter } from '@adapter/driver/http/presenters/async-upload-presenter'
+import { ICache } from '../ports/cache'
 
 interface UploadVideoUseCaseDto {
     originalVideoName: string
@@ -18,6 +19,7 @@ export class UploadVideoUseCase {
         private readonly videoStorage: IVideoStorage,
         private readonly videoMetadataRepository: IVideoMetadataRepository,
         private readonly mensageria: IMensageria,
+        private readonly cache: ICache
     )   {
         this.queueUrl = process.env.UPLOADED_VIDEO_QUEUE_URL ?? ''
     }
@@ -51,6 +53,8 @@ export class UploadVideoUseCase {
             
             console.info(`Message sent to SQS queue: ${this.queueUrl}`)
             
+            await this.cache.del(`videos:customer:${customerId}`)
+
             return AsyncUploadPresenter.fromDomain(file)
         } catch (error) {
             // Compensação para garantir atomicidade
