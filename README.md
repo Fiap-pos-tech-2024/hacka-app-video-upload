@@ -31,6 +31,12 @@ Este projeto segue a arquitetura hexagonal (Ports and Adapters), promovendo sepa
 ```
 
 ## ✅ Qualidade
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Fiap-pos-tech-2024_hacka-app-video-upload&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Fiap-pos-tech-2024_hacka-app-video-upload)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Fiap-pos-tech-2024_hacka-app-video-upload&metric=coverage)](https://sonarcloud.io/summary/new_code?id=Fiap-pos-tech-2024_hacka-app-video-upload)
+[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=Fiap-pos-tech-2024_hacka-app-video-upload&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=Fiap-pos-tech-2024_hacka-app-video-upload)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=Fiap-pos-tech-2024_hacka-app-video-upload&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=Fiap-pos-tech-2024_hacka-app-video-upload)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=Fiap-pos-tech-2024_hacka-app-video-upload&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=Fiap-pos-tech-2024_hacka-app-video-upload)
+
 
 Para garantir a qualidade do código, foram implementadas as seguintes práticas:
 
