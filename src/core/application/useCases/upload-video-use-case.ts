@@ -4,6 +4,7 @@ import { IMensageria } from '../ports/mensageria'
 import { IVideoMetadataRepository } from '../ports/video-metadata-repository'
 import { AsyncUploadPresenter } from '@adapter/driver/http/presenters/async-upload-presenter'
 import { ICache } from '../ports/cache'
+import { SQSServiceException } from '@aws-sdk/client-sqs'
 
 interface UploadVideoUseCaseDto {
     originalVideoName: string
@@ -28,7 +29,6 @@ export class UploadVideoUseCase {
         { originalVideoName, savedVideoKey, mimeType, customerId }: UploadVideoUseCaseDto
     ): Promise<AsyncUploadPresenter> {
         let file: VideoFile | undefined
-        let metadataSaved = false
 
         try {
             file = new VideoFile({ originalVideoName, savedVideoKey, mimeType })
@@ -40,7 +40,6 @@ export class UploadVideoUseCase {
                 customerId,
                 status: file.status
             })
-            metadataSaved = true
 
             console.info(`Video file saved: ${file.savedVideoKey}`)
 
@@ -58,7 +57,7 @@ export class UploadVideoUseCase {
             return AsyncUploadPresenter.fromDomain(file)
         } catch (error) {
             // Compensação para garantir atomicidade
-            if (file && metadataSaved) {
+            if (error instanceof SQSServiceException && file) {
                 await this.videoMetadataRepository.deleteVideoById(file.getId())
             }
             await this.videoStorage.deleteVideo(savedVideoKey)

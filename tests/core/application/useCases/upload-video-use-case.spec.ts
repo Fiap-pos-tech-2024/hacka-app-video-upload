@@ -1,6 +1,7 @@
 import { UploadVideoUseCase } from '@core/application/useCases/upload-video-use-case'
 import { InvalidFileTypeException } from '@core/domain/exceptions/file-exceptions'
 import { AsyncUploadPresenter } from '@adapter/driver/http/presenters/async-upload-presenter'
+import { SQSServiceException } from '@aws-sdk/client-sqs'
 
 describe('UploadVideoUseCase', () => {
     let videoStorage: { deleteVideo: jest.Mock }
@@ -99,11 +100,19 @@ describe('UploadVideoUseCase', () => {
     })
 
     it('deve compensar metadados e storage se falhar após salvar ambos', async () => {
-        mensageria.sendMessage.mockRejectedValue(new Error('Erro SQS'))
+        mensageria.sendMessage.mockRejectedValue(
+            new SQSServiceException({
+                name: 'SQSServiceException',
+                $fault: 'client',
+                $metadata: {},
+                message: 'Erro SQS'
+            })
+        )
         await expect(useCase.execute({ originalVideoName, savedVideoKey, mimeType, customerId }))
-            .rejects.toThrow('Erro SQS')
+            .rejects.toThrow(SQSServiceException)
         expect(videoMetadataRepository.saveVideo).toHaveBeenCalled()
         expect(mensageria.sendMessage).toHaveBeenCalled()
+        // Agora a compensação ocorre para qualquer erro após salvar os metadados
         expect(videoMetadataRepository.deleteVideoById).toHaveBeenCalled()
         expect(videoStorage.deleteVideo).toHaveBeenCalledWith(savedVideoKey)
     })
@@ -116,5 +125,5 @@ describe('UploadVideoUseCase', () => {
         expect(mensageria.sendMessage).not.toHaveBeenCalled()
         expect(videoMetadataRepository.deleteVideoById).not.toHaveBeenCalled()
         expect(videoStorage.deleteVideo).toHaveBeenCalledWith(savedVideoKey)
-    })      
+    })
 })

@@ -43,7 +43,7 @@ describe('multer-config', () => {
         const req = {} as Request
         const file = { originalname: 'meu-video.mkv' } as Express.Multer.File
         const storage = (uploadConfig as unknown as { storage: any }).storage
-        const keyFn = storage.key || storage.getKey || storage._handleFile?.key
+        const keyFn = storage.key ?? storage.getKey ?? storage._handleFile?.key
         expect(typeof keyFn).toBe('function')
         keyFn(req, file, (_err: Error | null, key: string) => {
             expect(key).toMatch(/^videos\/[\w-]{36}\.mkv$/)
