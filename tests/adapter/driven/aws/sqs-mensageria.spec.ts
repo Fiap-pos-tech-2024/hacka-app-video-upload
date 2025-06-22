@@ -1,32 +1,25 @@
-const mocks = {
-    sqsClientMock: undefined as unknown as jest.Mock,
-    sendMessageCommandMock: undefined as unknown as jest.Mock,
-}
-
+import { SQSClient, SendMessageCommand } from '@aws-sdk/client-sqs'
 import SqsMensageria from '@adapter/driven/aws/sqs-mensageria'
 
 jest.mock('@aws-sdk/client-sqs', () => {
-    mocks.sqsClientMock = jest.fn()
-    mocks.sendMessageCommandMock = jest.fn()
+    const original = jest.requireActual('@aws-sdk/client-sqs')
     return {
-        SQSClient: mocks.sqsClientMock,
-        SendMessageCommand: mocks.sendMessageCommandMock,
+        ...original,
+        SQSClient: jest.fn(),
+        SendMessageCommand: jest.fn(),
     }
 })
 
-describe('SqsMensageria', () => {
-    let sendMock: jest.Mock
+const mockedSendMessageCommand = SendMessageCommand as unknown as jest.Mock
 
+describe('SqsMensageria', () => {
     beforeEach(() => {
         jest.clearAllMocks()
-        sendMock = jest.fn().mockResolvedValue({})
-        // SQSClient retorna um objeto com método send
-        mocks.sqsClientMock.mockImplementation(() => ({ send: sendMock }))
     })
 
     it('deve instanciar o SQSClient com a região padrão', () => {
         new SqsMensageria()
-        expect(mocks.sqsClientMock).toHaveBeenCalledWith({ region: 'us-east-1' })
+        expect(SQSClient).toHaveBeenCalledWith({ region: 'us-east-1' })
     })
 
     it('deve instanciar o SQSClient com endpoint local se ENVIRONMENT=local', () => {
@@ -34,32 +27,34 @@ describe('SqsMensageria', () => {
         process.env.ENVIRONMENT = 'local'
         process.env.AWS_LOCAL_ENDPOINT = 'http://localhost:4566'
         new SqsMensageria()
-        expect(mocks.sqsClientMock).toHaveBeenCalledWith({ region: 'sa-east-1', endpoint: 'http://localhost:4566' })
+        expect(SQSClient).toHaveBeenCalledWith({ region: 'sa-east-1', endpoint: 'http://localhost:4566' })
     })
 
     it('deve enviar mensagem usando o client', async () => {
+        mockedSendMessageCommand.mockClear()
+        const sendMock = jest.fn().mockResolvedValue({})
+    ;(SQSClient as jest.Mock).mockImplementation(() => ({ send: sendMock }))
         const mensageria = new SqsMensageria()
         const queueUrl = 'url'
         const message = { foo: 'bar' }
 
         await mensageria.sendMessage(queueUrl, message)
 
-        expect(sendMock).toHaveBeenCalledWith(expect.any(mocks.sendMessageCommandMock))
-        expect(mocks.sendMessageCommandMock).toHaveBeenCalledWith({
+        expect(sendMock).toHaveBeenCalledWith(expect.any(SendMessageCommand))
+        expect(mockedSendMessageCommand).toHaveBeenCalledWith({
             QueueUrl: queueUrl,
             MessageBody: JSON.stringify(message),
         })
     })
+})
+it('deve falhar se ENVIRONMENT for checado como true ao invés de "local"', () => {
+    process.env.AWS_REGION = 'sa-east-1'
+    process.env.ENVIRONMENT = 'local'
+    process.env.AWS_LOCAL_ENDPOINT = 'http://localhost:4566'
+    new SqsMensageria()
+    expect(SQSClient).toHaveBeenCalledWith({ region: 'sa-east-1', endpoint: 'http://localhost:4566' })
 
-    it('deve falhar se ENVIRONMENT for checado como true ao invés de "local"', () => {
-        process.env.AWS_REGION = 'sa-east-1'
-        process.env.ENVIRONMENT = 'local'
-        process.env.AWS_LOCAL_ENDPOINT = 'http://localhost:4566'
-        new SqsMensageria()
-        expect(mocks.sqsClientMock).toHaveBeenCalledWith({ region: 'sa-east-1', endpoint: 'http://localhost:4566' })
-
-        process.env.ENVIRONMENT = 'production'
-        new SqsMensageria()
-        expect(mocks.sqsClientMock).toHaveBeenCalledWith({ region: 'sa-east-1' })
-    })
+    process.env.ENVIRONMENT = 'production'
+    new SqsMensageria()
+    expect(SQSClient).toHaveBeenCalledWith({ region: 'sa-east-1' })
 })
