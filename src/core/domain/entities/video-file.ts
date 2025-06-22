@@ -15,7 +15,7 @@ interface VideoFileProps {
 }
 
 export class VideoFile {
-    private id: UniqueEntityId
+    private readonly id: UniqueEntityId
   
     readonly originalVideoName: string
     readonly savedVideoKey: string
