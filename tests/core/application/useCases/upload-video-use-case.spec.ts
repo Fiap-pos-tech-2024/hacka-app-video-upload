@@ -2,7 +2,6 @@ import { UploadVideoUseCase } from '@core/application/useCases/upload-video-use-
 import { InvalidFileTypeException } from '@core/domain/exceptions/file-exceptions'
 import { AsyncUploadPresenter } from '@adapter/driver/http/presenters/async-upload-presenter'
 import { SQSServiceException } from '@aws-sdk/client-sqs'
-import { IMensageria } from '@core/application/ports/mensageria'
 
 describe('UploadVideoUseCase', () => {
     let videoStorage: { deleteVideo: jest.Mock }

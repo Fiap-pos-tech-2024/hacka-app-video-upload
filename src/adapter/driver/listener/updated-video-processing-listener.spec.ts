@@ -40,7 +40,7 @@ describe('UpdatedVideoProcessingListener', () => {
         const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {})
 
         // Run only one iteration of the loop
-        const listenPromise = listener.listen()
+        listener.listen()
         await Promise.resolve() // allow async code to run
         jest.advanceTimersByTime(16_000) // move past setTimeout
 
