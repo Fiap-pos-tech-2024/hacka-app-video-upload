@@ -32,7 +32,7 @@ export class UpdatedVideoProcessingListener {
             for (const { message, receiptHandles } of messages) {
                 console.info('Processing updated video message:', message)
                 
-                this.updateVideoMetadataUseCase.execute(message)
+                await this.updateVideoMetadataUseCase.execute(message)
 
                 await this.mensageria.deleteMessage(this.queueUrl, receiptHandles)
             }

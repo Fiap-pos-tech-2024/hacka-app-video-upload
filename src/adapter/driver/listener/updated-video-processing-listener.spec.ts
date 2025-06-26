@@ -30,7 +30,7 @@ describe('UpdatedVideoProcessingListener', () => {
     })
 
     it('should log info when starting listener and process messages', async () => {
-        const message: UpdateVideoMetadataUseCaseDto = { id: '1', title: 'Test' } as any
+        const message: UpdateVideoMetadataUseCaseDto = { id: '1', status: 'FINISHED' } as any
         mensageriaMock.receiveMessages.mockResolvedValue([
             { message, receiptHandles: 'abc' }
         ])
@@ -76,7 +76,7 @@ describe('UpdatedVideoProcessingListener', () => {
     })
 
     it('should log error if deleteMessage throws', async () => {
-        const message: UpdateVideoMetadataUseCaseDto = { id: '1', title: 'Test' } as any
+        const message: UpdateVideoMetadataUseCaseDto = { id: '1', status: 'FINISHED' } as any
         mensageriaMock.receiveMessages.mockResolvedValue([
             { message, receiptHandles: 'abc' }
         ])
