@@ -1,0 +1,16 @@
+{
+    "rules": [
+        {
+            "rulePriority": 1,
+            "description": "Limitar quantidade de imagens para 4",
+            "selection": {
+                "tagStatus": "any",
+                "countType": "imageCountMoreThan",
+                "countNumber": 4
+            },
+            "action": {
+                "type": "expire"
+            }
+        }
+    ]
+}

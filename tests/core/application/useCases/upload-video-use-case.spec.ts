@@ -9,7 +9,7 @@ describe('UploadVideoUseCase', () => {
     saveVideo: jest.Mock; deleteVideoById: jest.Mock; findVideoById: jest.Mock; 
     updateVideo: jest.Mock; findAllVideos: jest.Mock
   }
-    let mensageria: { sendMessage: jest.Mock }
+    let mensageria: { sendMessage: jest.Mock; receiveMessages: jest.Mock; deleteMessage: jest.Mock }
     let cacheMock: { del: jest.Mock }
     let useCase: UploadVideoUseCase
 
@@ -31,6 +31,8 @@ describe('UploadVideoUseCase', () => {
         }
         mensageria = {
             sendMessage: jest.fn(),
+            receiveMessages: jest.fn(),
+            deleteMessage: jest.fn(),
         }
         cacheMock = {
             del: jest.fn(),

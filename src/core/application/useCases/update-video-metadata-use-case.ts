@@ -5,12 +5,7 @@ import {
     InvalidVideoStatusException, VideoNotFoundException 
 } from '@core/domain/exceptions/video-exceptions'
 import { ICache } from '../ports/cache'
-
-interface UpdateVideoMetadataUseCaseDto {
-  id: string;
-  status: string;
-  savedZipKey?: string;
-}
+import { UpdateVideoMetadataUseCaseDto } from '../dtos/update-video-metadata-use-case-dto'
 
 export class UpdateVideoMetadataUseCase {
     constructor(
