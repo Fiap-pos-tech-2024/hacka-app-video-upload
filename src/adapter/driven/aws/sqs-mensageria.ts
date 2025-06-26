@@ -8,8 +8,8 @@ import { IMensageria } from '@core/application/ports/mensageria'
 
 export default class SqsMensageria implements IMensageria {
     private readonly client: SQSClient
-    static DEFAULT_MAX_NUMBER_OF_MESSAGES = 10
-    static DEFAULT_WAIT_TIME_SECONDS = 20
+    static readonly DEFAULT_MAX_NUMBER_OF_MESSAGES = 10
+    static readonly DEFAULT_WAIT_TIME_SECONDS = 20
 
     constructor() {
         this.client = new SQSClient({

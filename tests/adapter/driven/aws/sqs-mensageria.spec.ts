@@ -129,7 +129,32 @@ describe('SqsMensageria', () => {
         expect(spy).toHaveBeenCalledWith(expect.stringContaining('Failed to delete message from queue:'))
         spy.mockRestore()
     })
+
+    it('deve retornar array vazio se Messages não existir', async () => {
+        const sendMock = jest.fn().mockResolvedValue({ Messages: undefined })
+        ;(SQSClient as jest.Mock).mockImplementation(() => ({ send: sendMock }))
+        const mensageria = new SqsMensageria()
+        const queueUrl = 'queue-url'
+        const result = await mensageria.receiveMessages(queueUrl)
+        expect(result).toEqual([])
+    })
+
+    it('deve retornar message como undefined se Body não existir', async () => {
+        const fakeMessages = [
+            {
+                Body: undefined,
+                ReceiptHandle: 'handle1',
+            },
+        ]
+        const sendMock = jest.fn().mockResolvedValue({ Messages: fakeMessages })
+        ;(SQSClient as jest.Mock).mockImplementation(() => ({ send: sendMock }))
+        const mensageria = new SqsMensageria()
+        const queueUrl = 'queue-url'
+        const result = await mensageria.receiveMessages(queueUrl)
+        expect(result).toEqual([])
+    })
 })
+
 it('deve falhar se ENVIRONMENT for checado como true ao invés de "local"', () => {
     process.env.AWS_REGION = 'sa-east-1'
     process.env.ENVIRONMENT = 'local'
