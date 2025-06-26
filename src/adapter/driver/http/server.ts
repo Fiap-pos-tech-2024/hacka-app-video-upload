@@ -15,6 +15,7 @@ export class HackaAPI {
 
         app.use(express.urlencoded({ extended: true }))
         app.use('/video', videoRouter)
+        app.use('/health', (_req, res) => { res.status(200).json({ status: 'UP' }) })
         app.use(globalErrorHandler)
 
         const port = process.env.PORT ?? 3001
