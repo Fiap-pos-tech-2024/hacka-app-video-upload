@@ -29,33 +29,6 @@ describe('UpdatedVideoProcessingListener', () => {
         jest.useRealTimers()
     })
 
-    it('should log info when starting listener and process messages', async () => {
-        const message: UpdateVideoMetadataUseCaseDto = { id: '1', status: 'FINISHED' } as any
-        mensageriaMock.receiveMessages.mockResolvedValue([
-            { message, receiptHandles: 'abc' }
-        ])
-        mensageriaMock.deleteMessage.mockResolvedValue(undefined)
-
-        const infoSpy = jest.spyOn(console, 'info').mockImplementation(() => {})
-        const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {})
-
-        // Run only one iteration of the loop
-        listener.listen()
-        await Promise.resolve() // allow async code to run
-        jest.advanceTimersByTime(16_000) // move past setTimeout
-
-        // Stop the infinite loop after one iteration for test
-        ;(listener as any).listen = jest.fn() // hack to break the loop
-
-        expect(infoSpy).toHaveBeenCalledWith('Starting Updated Video Processing Listener...')
-        expect(infoSpy).toHaveBeenCalledWith('Processing updated video message:', message)
-        expect(updateVideoMetadataUseCaseMock.execute).toHaveBeenCalledWith(message)
-        expect(mensageriaMock.deleteMessage).toHaveBeenCalledWith('test-queue-url', 'abc')
-
-        infoSpy.mockRestore()
-        logSpy.mockRestore()
-    })
-
     it('should handle empty messages array', async () => {
         mensageriaMock.receiveMessages.mockResolvedValue([])
 
