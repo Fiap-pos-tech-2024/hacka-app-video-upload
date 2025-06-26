@@ -1,22 +1,8 @@
 import { NextFunction, Request, Response, Router } from 'express'
 import { uploadConfig } from '../config/multer-config'
-import { UploadVideoUseCase } from '@core/application/useCases/upload-video-use-case'
-import S3VideoStorage from '@adapter/driven/aws/s3-video-storage'
-import SqsMensageria from '@adapter/driven/aws/sqs-mensageria'
-import MySqlVideoMetadataRepository from '@adapter/driven/database/mysql-video-metadata-repository'
-import { PrismaService } from '@adapter/driven/database/prisma/prisma.service'
-import { UpdateVideoMetadataUseCase } from '@core/application/useCases/update-video-metadata-use-case'
-import { FindVideoByIdUseCase } from '@core/application/useCases/find-video-by-id-use-case'
-import { FindAllVideoUseCase } from '@core/application/useCases/find-all-video-use-case'
-import { RedisCache } from '@adapter/driven/cache/redis-cache'
+import { container } from '../../../../ioc/container'
 
 const videoRouter = Router()
-
-const prismaService = new PrismaService()
-const mySqlVideoMetadataRepository = new MySqlVideoMetadataRepository(prismaService)
-const s3VideoStorage = new S3VideoStorage()
-const sqsMensageria = new SqsMensageria()
-const cache = new RedisCache()
 
 // Stryker disable all
 videoRouter.post(
@@ -31,15 +17,8 @@ videoRouter.post(
                 res.status(400).json({ statusCode: 400, message: 'Missing requireds fields' })
                 return
             }
-      
-            const uploadVideoUseCase = new UploadVideoUseCase(
-                s3VideoStorage, 
-                mySqlVideoMetadataRepository, 
-                sqsMensageria,
-                cache
-            )
 
-            const response = await uploadVideoUseCase.execute({
+            const response = await container.uploadVideoUseCase.execute({
                 originalVideoName: originalname,
                 savedVideoKey: key,
                 mimeType: mimetype,
@@ -60,8 +39,7 @@ videoRouter.get(
         const { id } = req.params
 
         try {
-            const findVideoByIdUseCase = new FindVideoByIdUseCase(mySqlVideoMetadataRepository, cache)
-            const response = await findVideoByIdUseCase.execute({ id })
+            const response = await container.findVideoByIdUseCase.execute({ id })
             res.status(200).json(response)
         } catch (error) {
             next(error)
@@ -75,8 +53,7 @@ videoRouter.get(
         const { customerId } = req.query as { customerId?: string }
 
         try {
-            const findAllVideoUseCase = new FindAllVideoUseCase(mySqlVideoMetadataRepository, cache)
-            const response = await findAllVideoUseCase.execute({ query: { customerId } })
+            const response = await container.findAllVideoUseCase.execute({ query: { customerId } })
             res.status(200).json(response)
         } catch (error) {
             next(error)
@@ -89,13 +66,9 @@ videoRouter.patch(
     async (req: Request, res: Response, next: NextFunction) => {
         const { id } = req.params
         const { status, savedZipKey } = req.body
-    
+
         try {
-            const updateVideoMetadataUseCase = new UpdateVideoMetadataUseCase(
-                mySqlVideoMetadataRepository,
-                cache
-            )
-            const response = await updateVideoMetadataUseCase.execute({ id, status, savedZipKey })
+            const response = await container.updateVideoMetadataUseCase.execute({ id, status, savedZipKey })
             res.status(200).json(response)
         } catch (error) {
             next(error)

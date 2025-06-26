@@ -2,6 +2,7 @@ import { UploadVideoUseCase } from '@core/application/useCases/upload-video-use-
 import { InvalidFileTypeException } from '@core/domain/exceptions/file-exceptions'
 import { AsyncUploadPresenter } from '@adapter/driver/http/presenters/async-upload-presenter'
 import { SQSServiceException } from '@aws-sdk/client-sqs'
+import { IMensageria } from '@core/application/ports/mensageria'
 
 describe('UploadVideoUseCase', () => {
     let videoStorage: { deleteVideo: jest.Mock }
@@ -9,7 +10,7 @@ describe('UploadVideoUseCase', () => {
     saveVideo: jest.Mock; deleteVideoById: jest.Mock; findVideoById: jest.Mock; 
     updateVideo: jest.Mock; findAllVideos: jest.Mock
   }
-    let mensageria: { sendMessage: jest.Mock }
+    let mensageria: { sendMessage: jest.Mock; receiveMessages: jest.Mock; deleteMessage: jest.Mock }
     let cacheMock: { del: jest.Mock }
     let useCase: UploadVideoUseCase
 
@@ -31,6 +32,8 @@ describe('UploadVideoUseCase', () => {
         }
         mensageria = {
             sendMessage: jest.fn(),
+            receiveMessages: jest.fn(),
+            deleteMessage: jest.fn(),
         }
         cacheMock = {
             del: jest.fn(),
