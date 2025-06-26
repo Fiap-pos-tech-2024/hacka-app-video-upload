@@ -13,10 +13,11 @@ export class UpdatedVideoProcessingListener {
         this.updateVideoMetadataUseCase = updateVideoMetadataUseCase
     }
 
+    KEEP_LISTENING = true
+
     async listen(): Promise<void> {
         console.info('Starting Updated Video Processing Listener...')
-        const keepListening = true
-        while (keepListening) {
+        while (this.KEEP_LISTENING) {
             await this.processUpdatedVideoMessage()
 
             // Aguardar antes de obter novas mensagens

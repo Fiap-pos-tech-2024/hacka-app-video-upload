@@ -71,4 +71,26 @@ describe('UpdatedVideoProcessingListener', () => {
             mensageriaMock, updateVideoMetadataUseCaseMock)
         expect((listenerDefault as any).queueUrl).toBe('')
     })
+
+    it('should call processUpdatedVideoMessage once when KEEP_LISTENING becomes false after first iteration', async () => {
+        const processSpy = jest.spyOn(listener as any, 'processUpdatedVideoMessage').mockResolvedValue(undefined)
+        const infoSpy = jest.spyOn(console, 'info').mockImplementation(() => {})
+        
+        // Getter manual usando mockReturnValueOnce
+        const getter = jest.fn()
+        getter.mockReturnValueOnce(true).mockReturnValueOnce(false)
+        Object.defineProperty(listener, 'KEEP_LISTENING', {
+            get: getter,
+            set: () => {},
+            configurable: true
+        })
+        const promise = listener.listen()
+        await Promise.resolve()
+        jest.runOnlyPendingTimers()
+        await promise
+        expect(processSpy).toHaveBeenCalledTimes(1)
+        expect(infoSpy).toHaveBeenCalledWith('Starting Updated Video Processing Listener...')
+        processSpy.mockRestore()
+        infoSpy.mockRestore()
+    })
 })
