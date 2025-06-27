@@ -1,4 +1,4 @@
-name: Build and Push Docker Image to ECR and Redeploy ECS
+name: Build and Push Docker Image to ECR
 
 on:
   push:
@@ -20,7 +20,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          # role-to-assume: arn:aws:iam::816069165502:role/gh-actions-video-auth-service-role
+          # role-to-assume: arn:aws:iam::999999:role/gh-actions-hacka-app-video-upload-role
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
@@ -31,12 +31,6 @@ jobs:
           aws ecr describe-repositories --repository-names $ECR_REPOSITORY || \
           aws ecr create-repository --repository-name $ECR_REPOSITORY
           
-      - name: Create ECR lifecycle policy if it doesn't exist
-        run: |
-          aws ecr get-lifecycle-policy --repository-name $ECR_REPOSITORY || \
-          aws ecr put-lifecycle-policy --repository-name $ECR_REPOSITORY \
-            --lifecycle-policy-text file://lifecycle-policy.json
-
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
@@ -44,7 +38,7 @@ jobs:
       - name: Build, tag, and push Docker image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
+          IMAGE_TAG: latest
         run: |
           docker build --no-cache -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
