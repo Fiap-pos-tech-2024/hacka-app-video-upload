@@ -1,4 +1,4 @@
-import { AsyncUploadPresenter } from './async-upload-presenter'
+import { AsyncUploadPresenter } from '@adapter/driver/http/presenters/async-upload-presenter'
 import { VideoFile } from '@core/domain/entities/video-file'
 
 describe('AsyncUploadPresenter', () => {

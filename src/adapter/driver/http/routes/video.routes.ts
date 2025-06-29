@@ -1,20 +1,32 @@
 import { NextFunction, Request, Response, Router } from 'express'
-import { uploadConfig } from '../config/multer-config'
+import { uploadConfig } from '../middlewares/upload-file'
 import { container } from '../../../../ioc/container'
+import validateToken from '../middlewares/validate-token'
+
+declare module 'express' {
+  interface Request {
+    user?: {
+      id: string;
+      email: string;
+    }
+  }
+}
 
 const videoRouter = Router()
 
 // Stryker disable all
+videoRouter.use(validateToken)
+
 videoRouter.post(
     '/upload', 
     uploadConfig.single('video'), 
     async (req: Request, res: Response, next: NextFunction) => {
         const { originalname, key, mimetype } = req.file as Express.MulterS3.File
-        const customerId = req.header('x-customer-id')
+        const { id, email } = req.user!
 
         try {
-            if (!req.file || !customerId) {
-                res.status(400).json({ statusCode: 400, message: 'Missing requireds fields' })
+            if (!req.file) {
+                res.status(400).json({ statusCode: 400, message: 'Missing file' })
                 return
             }
 
@@ -22,7 +34,10 @@ videoRouter.post(
                 originalVideoName: originalname,
                 savedVideoKey: key,
                 mimeType: mimetype,
-                customerId: customerId as string
+                user: {
+                    id,
+                    email
+                }
             })
 
             res.status(202)
@@ -50,7 +65,7 @@ videoRouter.get(
 videoRouter.get(
     '/',
     async (req: Request, res: Response, next: NextFunction) => {
-        const { customerId } = req.query as { customerId?: string }
+        const customerId = req.user!.id
 
         try {
             const response = await container.findAllVideoUseCase.execute({ query: { customerId } })

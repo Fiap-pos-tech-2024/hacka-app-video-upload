@@ -4,22 +4,15 @@
         "title": "Video API",
         "version": "1.0.0"
     },
+    "security": [
+        { "bearerAuth": [] }
+    ],
     "paths": {
         "/video/upload": {
             "post": {
                 "summary": "Upload de vídeo",
                 "description": "Faz upload de um arquivo de vídeo e retorna os dados do vídeo salvo.",
-                "parameters": [
-                    {
-                        "name": "x-customer-id",
-                        "in": "header",
-                        "description": "ID do cliente que está enviando o vídeo.",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
+                "parameters": [],
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -125,18 +118,8 @@
         "/video": {
             "get": {
                 "summary": "Lista todos os vídeos",
-                "description": "Retorna uma lista de vídeos, podendo filtrar por customerId.",
-                "parameters": [
-                    {
-                        "name": "customerId",
-                        "in": "query",
-                        "description": "ID do cliente para filtrar os vídeos.",
-                        "required": false,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
+                "description": "Retorna uma lista de vídeos do cliente autenticado.",
+                "parameters": [],
                 "responses": {
                     "200": {
                         "description": "Lista de vídeos.",
@@ -309,6 +292,14 @@
         }
     },
     "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT",
+                "description": "Enter JWT Bearer token in the format 'Bearer {token}'"
+            }
+        },
         "schemas": {
             "VideoPresenter": {
                 "type": "object",

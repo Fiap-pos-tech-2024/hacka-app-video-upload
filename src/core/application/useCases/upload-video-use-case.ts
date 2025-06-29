@@ -10,7 +10,10 @@ interface UploadVideoUseCaseDto {
     originalVideoName: string
     savedVideoKey: string
     mimeType: string
-    customerId: string
+    user: {
+        id: string
+        email: string
+    }
 }
 
 export class UploadVideoUseCase {
@@ -26,7 +29,7 @@ export class UploadVideoUseCase {
     }
 
     async execute(
-        { originalVideoName, savedVideoKey, mimeType, customerId }: UploadVideoUseCaseDto
+        { originalVideoName, savedVideoKey, mimeType, user }: UploadVideoUseCaseDto
     ): Promise<AsyncUploadPresenter> {
         let file: VideoFile | undefined
 
@@ -37,7 +40,7 @@ export class UploadVideoUseCase {
                 id: file.getId(),
                 originalVideoName: file.originalVideoName,
                 savedVideoKey: file.savedVideoKey,
-                customerId,
+                customerId: user.id,
                 status: file.status
             })
 
@@ -48,11 +51,12 @@ export class UploadVideoUseCase {
                 savedVideoKey: file.savedVideoKey,
                 originalVideoName: file.originalVideoName,
                 type: file.mimeType,
+                user
             })
             
             console.info(`Message sent to SQS queue: ${this.queueUrl}`)
-            
-            await this.cache.del(`videos:customer:${customerId}`)
+
+            await this.cache.del(`videos:customer:${user.id}`)
 
             return AsyncUploadPresenter.fromDomain(file)
         } catch (error) {

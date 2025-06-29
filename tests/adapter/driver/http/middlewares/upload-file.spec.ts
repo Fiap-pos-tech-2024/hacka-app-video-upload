@@ -1,6 +1,6 @@
 import { Request } from 'express'
 import multer from 'multer'
-import { uploadConfig, fileFilter } from '@adapter/driver/http/config/multer-config'
+import { uploadConfig, fileFilter } from '@adapter/driver/http/middlewares/upload-file'
 import { InvalidFileTypeException } from '@core/domain/exceptions/file-exceptions'
 
 describe('multer-config', () => {

@@ -35,6 +35,12 @@ const globalErrorHandler = (
     case 'InvalidVideoStatusException':
         res.status(400).json({ statusCode: 400, message: err.message })
         break
+    case 'UnauthorizedException':
+        res.status(401).json({ statusCode: 401, message: err.message })
+        break
+    case 'ForbiddenException':
+        res.status(403).json({ statusCode: 403, message: err.message })
+        break
     case 'VideoNotFoundException':
         res.status(404).json({ statusCode: 404, message: err.message })
         break
