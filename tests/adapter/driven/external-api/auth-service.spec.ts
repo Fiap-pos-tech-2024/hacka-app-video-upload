@@ -33,14 +33,6 @@ describe('AuthService', () => {
         process.env = originalEnv
     })
 
-    it('deve lançar erro se BASE_PATH_AUTH não estiver definido', () => {
-        // Arrange
-        delete process.env.BASE_PATH_AUTH
-        
-        // Act & Assert
-        expect(() => new AuthService()).toThrow('BASE_PATH_AUTH environment variable is not set')
-    })
-
     it('deve criar instância corretamente com BASE_PATH_AUTH definido', () => {
         // Act
         authService = new AuthService()

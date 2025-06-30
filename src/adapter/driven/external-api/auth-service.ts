@@ -21,10 +21,6 @@ export class AuthService implements AuthPort {
     private readonly apiClient: AxiosInstance
     
     constructor() {
-        if (!this.baseUrl) {
-            throw new Error('BASE_PATH_AUTH environment variable is not set')
-        }
-
         this.apiClient = axios.create({
             baseURL: this.baseUrl,
             timeout: 5000
