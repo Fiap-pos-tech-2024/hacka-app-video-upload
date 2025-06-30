@@ -73,7 +73,7 @@ create-env-file-docker:
 	echo "MYSQL_DATABASE=$(MYSQL_DB)" >> .env
 	echo "MYSQL_USER=$(MYSQL_USER)" >> .env
 	echo "MYSQL_PASSWORD=$(MYSQL_PASSWORD)" >> .env
-	echo "BASE_PATH_AUTH=http://localhost:3000" >> .env
+	echo "BASE_PATH_AUTH=http://host.docker.internal:3000" >> .env
 
 down:
 	docker stop $(LOCALSTACK_CONTAINER_NAME)

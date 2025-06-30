@@ -17,10 +17,11 @@ interface AuthResponse {
 }
 
 export class AuthService implements AuthPort {
-    private readonly baseUrl = process.env.BASE_PATH_AUTH
+    private readonly baseUrl: string
     private readonly apiClient: AxiosInstance
     
     constructor() {
+        this.baseUrl = process.env.BASE_PATH_AUTH ?? 'http://localhost:3000/auth'
         this.apiClient = axios.create({
             baseURL: this.baseUrl,
             timeout: 5000

@@ -12,7 +12,7 @@ export class ValidateTokenUseCase {
     ) {}
 
     async execute({ authorization }: ValidateTokenUseCaseDto): Promise<UserPresenter> {
-        if (!authorization || !authorization.startsWith('Bearer ')) {
+        if (!authorization?.startsWith('Bearer ')) {
             throw new UnauthorizedException('Authorization header is missing or invalid')
         }
 
