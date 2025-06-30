@@ -3,7 +3,8 @@
     "baseUrl": "./",
     "paths": {
       "@core/*": ["src/core/*"],
-      "@adapter/*": ["src/adapter/*"]
+      "@adapter/*": ["src/adapter/*"],
+      "@ioc/*": ["src/ioc/*"]
     },
     "types": ["jest"],
     "target": "es2020",

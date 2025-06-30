@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express'
-import { container } from 'src/ioc/container'
+import { container } from '@ioc/container'
 
 // Stryker disable all
 declare module 'express' {

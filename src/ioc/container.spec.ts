@@ -1,6 +1,8 @@
 import { container } from './container'
 import * as containerModule from './container'
 
+process.env.BASE_PATH_AUTH = 'http://localhost/auth'
+
 describe('container', () => {
     it('should export all dependencies', () => {
         expect(container).toHaveProperty('prismaService')

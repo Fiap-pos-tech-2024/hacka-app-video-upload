@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response, Router } from 'express'
 import { uploadConfig } from '../middlewares/upload-file'
-import { container } from '../../../../ioc/container'
+import { container } from '@ioc/container'
 import validateToken from '../middlewares/validate-token'
 
 declare module 'express' {

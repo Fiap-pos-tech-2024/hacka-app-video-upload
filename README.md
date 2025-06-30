@@ -44,7 +44,7 @@ Para garantir a qualidade do código, foram implementadas as seguintes práticas
 
 **Testes unitários:** Cobertura TOTAL (**100%**) das linhas, funções e branches do código, validada com Jest.
 
-**Testes de mutação:** Todos os mutantes gerados foram eliminados (killed), assegurando alta confiabilidade do código.
+**Testes de mutação:** Eliminando os mutantes gerados (killed), assegurando alta confiabilidade do código.
 
 > **O que são testes mutantes?**
 > Testes de mutação consistem em modificar propositalmente pequenos trechos do código (criando "mutantes") para verificar se os testes existentes conseguem detectar esses erros. Se todos os mutantes são "mortos" (ou seja, detectados pelos testes), isso indica que a suíte de testes é realmente eficaz na validação do comportamento do sistema. Utilizar testes mutantes aumenta a confiança na qualidade dos testes e na robustez do código.
@@ -60,11 +60,13 @@ npm run test:mutations
 
 ## 📌 Endpoints
 
+Todos os endpoints necessitam de autenticação via token JWT. O token deve ser enviado no cabeçalho `Authorization` como `Bearer <token>`. O token é gerado e validado através do serviço contido no repositório [video-auth-service](https://github.com/Fiap-pos-tech-2024/video-auth-service).
+
 `POST /videos/upload` — Upload de vídeo (salva no S3, registra metadados e publica mensagem na fila)
 
 `GET /videos/:id` — Consulta os metadados de um vídeo por ID (usa cache)
 
-`GET /videos?customerId=...` — Lista todos os vídeos de um cliente e seus status (usa cache)
+`GET /videos` — Lista todos os vídeos de um cliente e seus status (usa cache)
 
 `PATCH /videos/:id` — Atualiza status e zip gerado do vídeo (invalida cache)
 
