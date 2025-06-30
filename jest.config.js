@@ -4,5 +4,6 @@ module.exports = {
     moduleNameMapper: {
         '^@core/(.*)$': '<rootDir>/src/core/$1',
         '^@adapter/(.*)$': '<rootDir>/src/adapter/$1',
+        '^@ioc/(.*)$': '<rootDir>/src/ioc/$1',
     },
 }

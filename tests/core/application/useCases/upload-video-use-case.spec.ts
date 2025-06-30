@@ -16,7 +16,10 @@ describe('UploadVideoUseCase', () => {
     const originalVideoName = 'video.mp4'
     const savedVideoKey = 'videos/saved-key.mp4'
     const mimeType = 'video/mp4'
-    const customerId = 'customer-123'
+    const user = {
+        id: 'customer-123',
+        email: 'test@example.com'
+    }
 
     beforeEach(() => {
         videoStorage = {
@@ -46,13 +49,13 @@ describe('UploadVideoUseCase', () => {
 
     it('deve salvar metadados e enviar mensagem com sucesso', async () => {
         const spy = jest.spyOn(console, 'info').mockImplementation(() => {})
-        const result = await useCase.execute({ originalVideoName, savedVideoKey, mimeType, customerId })
+        const result = await useCase.execute({ originalVideoName, savedVideoKey, mimeType, user })
 
         expect(videoMetadataRepository.saveVideo).toHaveBeenCalledWith(expect.objectContaining({
             id: expect.any(String),
             originalVideoName,
             savedVideoKey,
-            customerId,
+            customerId: user.id,
             status: expect.any(String),
         }))
         expect(spy).toHaveBeenCalledWith(`Video file saved: ${savedVideoKey}`)
@@ -63,20 +66,21 @@ describe('UploadVideoUseCase', () => {
                 savedVideoKey,
                 originalVideoName,
                 type: mimeType,
+                user
             })
         )
         expect(spy).toHaveBeenCalledWith(
             'Message sent to SQS queue: https://sqs.us-east-1.amazonaws.com/123456789012/my-queue'
         )
         expect(result).toBeInstanceOf(AsyncUploadPresenter)
-        expect(cacheMock.del).toHaveBeenCalledWith(`videos:customer:${customerId}`)
+        expect(cacheMock.del).toHaveBeenCalledWith(`videos:customer:${user.id}`)
         spy.mockRestore()
     })
 
     it('deve salvar metadados e enviar mensagem com sucesso sem fila SQS', async () => {
         delete process.env.UPLOADED_VIDEO_QUEUE_URL
         useCase = new UploadVideoUseCase(videoStorage, videoMetadataRepository, mensageria, cacheMock as any)
-        const result = await useCase.execute({ originalVideoName, savedVideoKey, mimeType, customerId })
+        const result = await useCase.execute({ originalVideoName, savedVideoKey, mimeType, user })
 
         expect(videoMetadataRepository.saveVideo).toHaveBeenCalled()
         expect(mensageria.sendMessage).toHaveBeenCalledWith(
@@ -86,14 +90,15 @@ describe('UploadVideoUseCase', () => {
                 savedVideoKey,
                 originalVideoName,
                 type: mimeType,
+                user
             })
         )
         expect(result).toBeInstanceOf(AsyncUploadPresenter)
-        expect(cacheMock.del).toHaveBeenCalledWith(`videos:customer:${customerId}`)
+        expect(cacheMock.del).toHaveBeenCalledWith(`videos:customer:${user.id}`)
     })
 
     it('deve lançar InvalidFileTypeException se a extensão de arquivo for inválida', async () => {
-        await expect(useCase.execute({ originalVideoName, savedVideoKey, mimeType: 'fake', customerId }))
+        await expect(useCase.execute({ originalVideoName, savedVideoKey, mimeType: 'fake', user }))
             .rejects.toThrow(InvalidFileTypeException)
         expect(videoMetadataRepository.saveVideo).not.toHaveBeenCalled()
         expect(mensageria.sendMessage).not.toHaveBeenCalled()
@@ -110,7 +115,7 @@ describe('UploadVideoUseCase', () => {
                 message: 'Erro SQS'
             })
         )
-        await expect(useCase.execute({ originalVideoName, savedVideoKey, mimeType, customerId }))
+        await expect(useCase.execute({ originalVideoName, savedVideoKey, mimeType, user }))
             .rejects.toThrow(SQSServiceException)
         expect(videoMetadataRepository.saveVideo).toHaveBeenCalled()
         expect(mensageria.sendMessage).toHaveBeenCalled()
@@ -121,7 +126,7 @@ describe('UploadVideoUseCase', () => {
 
     it('deve compensar apenas storage se falhar ao salvar metadados', async () => {
         videoMetadataRepository.saveVideo.mockRejectedValue(new Error('Erro Metadata'))
-        await expect(useCase.execute({ originalVideoName, savedVideoKey, mimeType, customerId }))
+        await expect(useCase.execute({ originalVideoName, savedVideoKey, mimeType, user }))
             .rejects.toThrow('Erro Metadata')
         expect(videoMetadataRepository.saveVideo).toHaveBeenCalled()
         expect(mensageria.sendMessage).not.toHaveBeenCalled()

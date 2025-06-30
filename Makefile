@@ -54,6 +54,7 @@ create-env-file:
 	echo "UPLOADED_VIDEO_QUEUE_URL=$$UPLOADED_VIDEO_QUEUE_URL" >> .env
 	UPDATED_VIDEO_PROCESSING_QUEUE_URL=$$(aws --endpoint-url=http://localhost:4566 sqs get-queue-url --queue-name updated-video-processing-queue --output text --query 'QueueUrl'); \
 	echo "UPDATED_VIDEO_PROCESSING_QUEUE_URL=$$UPDATED_VIDEO_PROCESSING_QUEUE_URL" >> .env
+	echo "BASE_PATH_AUTH=http://localhost:3000" >> .env
 
 create-env-file-docker:
 	echo "AWS_ACCESS_KEY_ID=localstack" > .env
@@ -72,6 +73,7 @@ create-env-file-docker:
 	echo "MYSQL_DATABASE=$(MYSQL_DB)" >> .env
 	echo "MYSQL_USER=$(MYSQL_USER)" >> .env
 	echo "MYSQL_PASSWORD=$(MYSQL_PASSWORD)" >> .env
+	echo "BASE_PATH_AUTH=http://localhost:3000" >> .env
 
 down:
 	docker stop $(LOCALSTACK_CONTAINER_NAME)
