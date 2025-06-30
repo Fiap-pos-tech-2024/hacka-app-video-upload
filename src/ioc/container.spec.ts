@@ -12,6 +12,7 @@ describe('container', () => {
         expect(container).toHaveProperty('uploadVideoUseCase')
         expect(container).toHaveProperty('findVideoByIdUseCase')
         expect(container).toHaveProperty('findAllVideoUseCase')
+        expect(container).toHaveProperty('validateTokenUseCase')
     })
 
     it('should instantiate dependencies only once (singleton)', () => {
@@ -25,5 +26,6 @@ describe('container', () => {
         expect(typeof container.uploadVideoUseCase.execute).toBe('function')
         expect(typeof container.findVideoByIdUseCase.execute).toBe('function')
         expect(typeof container.findAllVideoUseCase.execute).toBe('function')
+        expect(typeof container.validateTokenUseCase.execute).toBe('function')
     })
 })

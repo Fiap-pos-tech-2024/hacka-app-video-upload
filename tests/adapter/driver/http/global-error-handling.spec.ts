@@ -60,6 +60,18 @@ describe('globalErrorHandler', () => {
         expectResponse(413, 'Arquivo grande')
     })
 
+    it('deve tratar UnauthorizedException', () => {
+        const err = { name: 'UnauthorizedException', message: 'Não autorizado' }
+        globalErrorHandler(err as any, {} as any, res, jest.fn())
+        expectResponse(401, 'Não autorizado')
+    })
+
+    it('deve tratar ForbiddenException', () => {
+        const err = { name: 'ForbiddenException', message: 'Acesso proibido' }
+        globalErrorHandler(err as any, {} as any, res, jest.fn())
+        expectResponse(403, 'Acesso proibido')
+    })
+
     it('deve tratar erro genérico', () => {
         const err = { name: 'OtherError', message: 'Erro desconhecido' }
         globalErrorHandler(err as any, {} as any, res, jest.fn())
