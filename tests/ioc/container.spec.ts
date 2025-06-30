@@ -1,9 +1,12 @@
-import { container } from './container'
-import * as containerModule from './container'
-
-process.env.BASE_PATH_AUTH = 'http://localhost/auth'
+import { container } from '@ioc/container'
+import * as containerModule from '@ioc/container'
 
 describe('container', () => {
+    beforeEach(() => {
+        jest.clearAllMocks()
+        process.env.BASE_PATH_AUTH = 'http://localhost/auth'
+    })
+
     it('should export all dependencies', () => {
         expect(container).toHaveProperty('prismaService')
         expect(container).toHaveProperty('mySqlVideoMetadataRepository')
