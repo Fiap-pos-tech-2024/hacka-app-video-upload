@@ -4,6 +4,9 @@
         "title": "Video API",
         "version": "1.0.0"
     },
+    "servers": [
+        { "url": "/video-upload-app" }
+    ],
     "security": [
         { "bearerAuth": [] }
     ],

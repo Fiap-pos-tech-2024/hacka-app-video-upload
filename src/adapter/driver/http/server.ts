@@ -11,10 +11,10 @@ export class HackaAPI {
         const app = express()
         
         app.use(express.json())
-        app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs))
+        app.use('/video-upload-app/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs))
 
         app.use(express.urlencoded({ extended: true }))
-        app.use('/video', videoRouter)
+        app.use('/video-upload-app/video', videoRouter)
         app.use('/health', (_req, res) => { res.status(200).json({ status: 'UP' }) })
         app.use(globalErrorHandler)
 
