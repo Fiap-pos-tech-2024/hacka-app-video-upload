@@ -22,7 +22,7 @@ export default async function validateToken(
         const user = await container.validateTokenUseCase.execute({ authorization: authHeader })
 
         request.user = {
-            id: user.id,
+            id: String(user.id),
             email: user.email
         }
 

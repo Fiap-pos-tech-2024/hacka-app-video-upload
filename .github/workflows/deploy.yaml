@@ -40,5 +40,14 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: latest
         run: |
+          docker image rm $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG || true
           docker build --no-cache -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+      - name: Force new ECS deployment
+        run: |
+          aws ecs update-service \
+            --cluster microservices-cluster \
+            --service video-update-service \
+            --force-new-deployment \
+            --region us-east-1
