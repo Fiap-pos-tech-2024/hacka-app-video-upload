@@ -1,3 +1,5 @@
+name: Sonarcloud
+
 on:
   push:
     branches: [ main ]
