@@ -65,3 +65,8 @@ jobs:
       - name: Print Swagger URL
         run: |
           echo "📄 Swagger disponível em: http://${{ steps.get-alb-dns.outputs.alb_dns }}/video-upload-app/docs"
+
+      - name: Print Grafana Cloud Dashboard URL
+        run: |
+          echo "📊 Dashboard Prometheus no Grafana Cloud:"
+          echo "🔗 https://fiapmicroservices.grafana.net/d/video-upload-prom/video-upload-service-prometheus?orgId=1&from=now-15m&to=now&timezone=browser&refresh=30s"
