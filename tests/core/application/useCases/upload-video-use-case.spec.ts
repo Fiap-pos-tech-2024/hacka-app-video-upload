@@ -42,7 +42,7 @@ describe('UploadVideoUseCase', () => {
             del: jest.fn(),
         }
 
-        process.env.UPLOADED_VIDEO_QUEUE_URL = 'https://sqs.us-east-1.amazonaws.com/123456789012/my-queue'
+        process.env.VIDEO_PROCESSING_QUEUE_URL = 'https://sqs.us-east-1.amazonaws.com/123456789012/my-queue'
 
         useCase = new UploadVideoUseCase(videoStorage, videoMetadataRepository, mensageria, cacheMock as any)
         jest.clearAllMocks()
@@ -79,7 +79,7 @@ describe('UploadVideoUseCase', () => {
     })
 
     it('deve salvar metadados e enviar mensagem com sucesso sem fila SQS', async () => {
-        delete process.env.UPLOADED_VIDEO_QUEUE_URL
+        delete process.env.VIDEO_PROCESSING_QUEUE_URL
         useCase = new UploadVideoUseCase(videoStorage, videoMetadataRepository, mensageria, cacheMock as any)
         const result = await useCase.execute({ originalVideoName, savedVideoKey, mimeType, user })
 
