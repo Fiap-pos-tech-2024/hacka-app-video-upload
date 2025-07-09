@@ -18,7 +18,8 @@ describe('UploadVideoUseCase', () => {
     const mimeType = 'video/mp4'
     const user = {
         id: 'customer-123',
-        email: 'test@example.com'
+        email: 'test@example.com',
+        authorization: 'Bearer xpto'
     }
 
     beforeEach(() => {

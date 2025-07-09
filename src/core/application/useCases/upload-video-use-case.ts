@@ -12,7 +12,8 @@ interface UploadVideoUseCaseDto {
     mimeType: string
     user: {
         id: string
-        email: string
+        email: string,
+        authorization: string
     }
 }
 

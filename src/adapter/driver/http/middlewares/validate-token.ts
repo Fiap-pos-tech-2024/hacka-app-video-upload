@@ -7,6 +7,7 @@ declare module 'express' {
     user?: {
       id: string;
       email: string;
+      authorization: string;
     }
   }
 }
@@ -23,7 +24,8 @@ export default async function validateToken(
 
         request.user = {
             id: String(user.id),
-            email: user.email
+            email: user.email,
+            authorization: authHeader!
         }
 
         return next()
