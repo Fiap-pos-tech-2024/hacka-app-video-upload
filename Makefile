@@ -50,8 +50,8 @@ create-env-file:
 	echo "AWS_BUCKET_NAME=$(BUCKET_NAME)" >> .env
 	echo "REDIS_HOST=localhost" >> .env
 	echo "REDIS_PORT=$(REDIS_PORT)" >> .env
-	UPLOADED_VIDEO_QUEUE_URL=$$(aws --endpoint-url=http://localhost:4566 sqs get-queue-url --queue-name uploaded-video-queue --output text --query 'QueueUrl'); \
-	echo "UPLOADED_VIDEO_QUEUE_URL=$$UPLOADED_VIDEO_QUEUE_URL" >> .env
+	VIDEO_PROCESSING_QUEUE_URL=$$(aws --endpoint-url=http://localhost:4566 sqs get-queue-url --queue-name uploaded-video-queue --output text --query 'QueueUrl'); \
+	echo "VIDEO_PROCESSING_QUEUE_URL=$$VIDEO_PROCESSING_QUEUE_URL" >> .env
 	UPDATED_VIDEO_PROCESSING_QUEUE_URL=$$(aws --endpoint-url=http://localhost:4566 sqs get-queue-url --queue-name updated-video-processing-queue --output text --query 'QueueUrl'); \
 	echo "UPDATED_VIDEO_PROCESSING_QUEUE_URL=$$UPDATED_VIDEO_PROCESSING_QUEUE_URL" >> .env
 	echo "BASE_PATH_AUTH=http://localhost:3000" >> .env
@@ -66,7 +66,7 @@ create-env-file-docker:
 	echo "AWS_BUCKET_NAME=$(BUCKET_NAME)" >> .env
 	echo "REDIS_HOST=db-redis" >> .env
 	echo "REDIS_PORT=$(REDIS_PORT)" >> .env
-	echo "UPLOADED_VIDEO_QUEUE_URL=http://localstack:4566/000000000000/uploaded-video-queue" >> .env
+	echo "VIDEO_PROCESSING_QUEUE_URL=http://localstack:4566/000000000000/uploaded-video-queue" >> .env
 	echo "UPDATED_VIDEO_PROCESSING_QUEUE_URL=http://localstack:4566/000000000000/updated-video-processing-queue" >> .env
 	echo "PORT=3001" >> .env
 	echo "MYSQL_ROOT_PASSWORD=$(MYSQL_PASSWORD)" >> .env
