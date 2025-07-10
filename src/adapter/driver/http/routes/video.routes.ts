@@ -8,6 +8,7 @@ declare module 'express' {
     user?: {
       id: string;
       email: string;
+      authorization: string;
     }
   }
 }
@@ -22,7 +23,7 @@ videoRouter.post(
     uploadConfig.single('video'), 
     async (req: Request, res: Response, next: NextFunction) => {
         const { originalname, key, mimetype } = req.file as Express.MulterS3.File
-        const { id, email } = req.user!
+        const { id, email, authorization } = req.user!
 
         try {
             if (!req.file) {
@@ -36,7 +37,8 @@ videoRouter.post(
                 mimeType: mimetype,
                 user: {
                     id,
-                    email
+                    email,
+                    authorization
                 }
             })
 

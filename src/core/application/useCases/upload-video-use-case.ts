@@ -12,7 +12,8 @@ interface UploadVideoUseCaseDto {
     mimeType: string
     user: {
         id: string
-        email: string
+        email: string,
+        authorization: string
     }
 }
 
@@ -25,7 +26,7 @@ export class UploadVideoUseCase {
         private readonly mensageria: IMensageria,
         private readonly cache: ICache
     )   {
-        this.queueUrl = process.env.UPLOADED_VIDEO_QUEUE_URL ?? ''
+        this.queueUrl = process.env.VIDEO_PROCESSING_QUEUE_URL ?? ''
     }
 
     async execute(
