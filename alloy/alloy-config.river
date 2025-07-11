@@ -1,7 +1,13 @@
-discovery.relabel "self_target" {
+discovery.relabel "static_targets_upload" {
   targets = [{
     __address__ = env("SHARED_ALB_DNS") + ":80",
   }]
+
+  rule {
+    source_labels = []
+    target_label  = "job"
+    replacement   = "upload-service"
+  }
 }
 
 prometheus.scrape "upload_service" {
@@ -9,13 +15,15 @@ prometheus.scrape "upload_service" {
   metrics_path    = "/upload-metrics"
   scrape_interval = "15s"
   scrape_timeout  = "10s"
-  targets         = discovery.relabel.self_target.output
-  forward_to      = [prometheus.remote_write.to_grafana.receiver]
+
+  targets = discovery.relabel.static_targets_upload.output
+
+  forward_to = [prometheus.remote_write.to_grafana_upload.receiver]
 }
 
-prometheus.remote_write "to_grafana" {
+prometheus.remote_write "to_grafana_upload" {
   endpoint {
-    name = "hosted-prometheus"
+    name = "hosted-prometheus_upload"
     url  = env("GRAFANA_REMOTE_WRITE_URL")
 
     basic_auth {
