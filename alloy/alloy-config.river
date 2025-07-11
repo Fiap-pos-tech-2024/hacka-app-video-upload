@@ -18,7 +18,7 @@ prometheus.scrape "upload_service" {
 
   targets = discovery.relabel.static_targets_upload.output
 
-  forward_to = [prometheus.remote_write.to_grafana_upload]
+  forward_to = [prometheus.remote_write.to_grafana_upload.receiver]
 }
 
 prometheus.remote_write "to_grafana_upload" {
