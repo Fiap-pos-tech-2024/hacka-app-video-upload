@@ -1,6 +1,6 @@
 discovery.relabel "static_targets_upload" {
   targets = [{
-    __address__ = env("UPLOAD_SERVICE_ALB_DNS") + ":80",
+    __address__ = env("SHARED_ALB_DNS") + ":80",
   }]
 
   rule {
